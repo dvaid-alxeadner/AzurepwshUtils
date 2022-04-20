@@ -500,6 +500,6 @@ try {
 Catch
 {
     Write-Output $_.Exception.GetType().FullName, $_.Exception.Message
-    Write-Host "Error please report in https://github.com/dvaid-alxeadner/MSOLpwshUtils" 
+    Write-Host "Error please report in https://github.com/dvaid-alxeadner/AzurepwshUtils" 
     exit 
 }
