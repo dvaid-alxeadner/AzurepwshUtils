@@ -154,15 +154,15 @@ try {
         Write-Host $pol.Name+"`n"
 
         # Azure SQL Database should have the minimal TLS version of 1.2 DENY
-        $definition = Get-AzPolicyDefinition | Where-Object { $_.Properties.DisplayName -eq "Azure SQL Database should have the minimal TLS version of 1.2" }
+        $definition = Get-AzPolicyDefinition | Where-Object { $_.Properties.DisplayName -eq "Azure SQL Database should be running TLS version 1.2 or newer" }
         $Description = "Para cumplir el estandar de seguridad de Azure todas las bases de datos Azure SQL deben usar la ultima version disponible de TLS."
-        $pol = New-AzPolicyAssignment -Name "audit-tls-asqls" -DisplayName "21) Azure SQL Database should have the minimal TLS version of 1.2" -Description $Description -PolicyDefinition $definition -Scope "/subscriptions/$($SubscriptionId)"
+        $pol = New-AzPolicyAssignment -Name "audit-tls-asqls" -DisplayName "21) Azure SQL Database should be running TLS version 1.2 or newer" -Description $Description -PolicyDefinition $definition -Scope "/subscriptions/$($SubscriptionId)"
         Write-Host $pol.Name+"`n"
 
         # Azure Defender for Azure SQL Database servers should be enabled AuditIfNotExist
-        $definition = Get-AzPolicyDefinition | Where-Object { $_.Properties.DisplayName -eq "Azure SQL Database should be running TLS version 1.2 or newer" }
+        $definition = Get-AzPolicyDefinition | Where-Object { $_.Properties.DisplayName -eq "Azure Defender for Azure SQL Database servers should be enabled" }
         $Description = "Para cumplir el estandar de seguridad de Azure las bases de datos SQL Server deben tener habilitado el Azure Defender."
-        $pol = New-AzPolicyAssignment -Name "audit-azdf-asqls" -DisplayName "22) Azure SQL Database should be running TLS version 1.2 or newer" -Description $Description -PolicyDefinition $definition -Scope "/subscriptions/$($SubscriptionId)"
+        $pol = New-AzPolicyAssignment -Name "audit-azdf-asqls" -DisplayName "22) Azure Defender for Azure SQL Database servers should be enabled" -Description $Description -PolicyDefinition $definition -Scope "/subscriptions/$($SubscriptionId)"
         Write-Host $pol.Name+"`n"
 
         # An Azure Active Directory administrator should be provisioned for SQL servers AuditIfNotExist
@@ -498,7 +498,7 @@ try {
         $pol = New-AzPolicyAssignment -Name "audit-acr-plink" -DisplayName "77) Container registries should have SKUs that support Private Links." -Description $Description -PolicyDefinition $definition -Scope "/subscriptions/$($SubscriptionId)"
         Write-Host $pol.Name+"`n"
         
-        # Removed by Azure
+        # Removed By Azure
         # Azure Defender for container registries should be enabled enable AuditIfNotExist
         # $definition = Get-AzPolicyDefinition | Where-Object { $_.Properties.DisplayName -eq "Azure Defender for container registries should be enabled" }
         # $Description = "Para cumplir el estandar de seguridad de Azure los servicios Azure Container Registry deben tener habilitado Azure Defender"
@@ -525,10 +525,10 @@ try {
         Write-Host $pol.Name+"`n" 
 
         # Storage accounts should have shared access signature (SAS) policies configured enabled DENY
-        #$definition = Get-AzPolicyDefinition | Where-Object { $_.Properties.DisplayName -eq "Storage accounts should have shared access signature (SAS) policies configured" }
-        #$Description = "Para cumplir el estandar de seguridad de Azure las cuentas de storage deben tener configuradas politicas para SAS."
-        #$pol = New-AzPolicyAssignment -Name "audit-saspolicy-storage" -DisplayName "82) Storage accounts should have shared access signature (SAS) policies configured." -Description $Description -PolicyDefinition $definition -Scope "/subscriptions/$($SubscriptionId)"
-        #Write-Host $pol.Name+"`n" 
+        # $definition = Get-AzPolicyDefinition | Where-Object { $_.Properties.DisplayName -eq "Storage accounts should have shared access signature (SAS) policies configured" }
+        # $Description = "Para cumplir el estandar de seguridad de Azure las cuentas de storage deben tener configuradas politicas para SAS."
+        # $pol = New-AzPolicyAssignment -Name "audit-saspolicy-storage" -DisplayName "82) Storage accounts should have shared access signature (SAS) policies configured." -Description $Description -PolicyDefinition $definition -Scope "/subscriptions/$($SubscriptionId)"
+        # Write-Host $pol.Name+"`n" 
         
         # Storage accounts should prevent cross tenant object replication enabled DENY
         $definition = Get-AzPolicyDefinition | Where-Object { $_.Properties.DisplayName -eq "Storage accounts should prevent cross tenant object replication" }
