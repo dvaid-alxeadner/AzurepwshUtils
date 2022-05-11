@@ -160,9 +160,9 @@ try {
         Write-Host $pol.Name+"`n"
 
         # Azure Defender for Azure SQL Database servers should be enabled AuditIfNotExist
-        $definition = Get-AzPolicyDefinition | Where-Object { $_.Properties.DisplayName -eq "Azure Defender for Azure SQL Database servers should be enabled" }
+        $definition = Get-AzPolicyDefinition | Where-Object { $_.Properties.DisplayName -eq "Azure SQL Database should be running TLS version 1.2 or newer" }
         $Description = "Para cumplir el estandar de seguridad de Azure las bases de datos SQL Server deben tener habilitado el Azure Defender."
-        $pol = New-AzPolicyAssignment -Name "audit-azdf-asqls" -DisplayName "22) Azure Defender for Azure SQL Database servers should be enabled" -Description $Description -PolicyDefinition $definition -Scope "/subscriptions/$($SubscriptionId)"
+        $pol = New-AzPolicyAssignment -Name "audit-azdf-asqls" -DisplayName "22) Azure SQL Database should be running TLS version 1.2 or newer" -Description $Description -PolicyDefinition $definition -Scope "/subscriptions/$($SubscriptionId)"
         Write-Host $pol.Name+"`n"
 
         # An Azure Active Directory administrator should be provisioned for SQL servers AuditIfNotExist
