@@ -1,4 +1,4 @@
-param ($environment, $apiName, $apiPrefix, $apiProductId, $SwaggerUrl, $HttpMethods = 'NO', $frontEndUrl, $JWT = 'NO', $JWTvalURL = 'https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration', $audience ='NO', $ticket, $BackendID='NO', $SubscriptionId='aaaaaaaa-bbbb-cccc-eeee-fffffffffff', $rgName ='RG', $apiMGMService = 'APIM', $TenantPosto = 'aaaaaaaa-bbbb-cccc-eeee-fffffffffff')
+param ($SubscriptionId='aaaaaaaa-bbbb-cccc-eeee-fffffffffff', $TenantPosto='aaaaaaaa-bbbb-cccc-eeee-fffffffffff', $rgName='RG_XXX_YYY', $apiMGMService='APIMGMTXXX', $apiName, $apiPrefix, $apiProductId, $ServiceURL, $HttpMethods = 'NO', $frontEndUrl, $JWT = 'NO', $JWTvalURL = 'https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration', $audience ='NO', $ticket, $BackendID='NO', $ApiType='Swagger', $wsdlBackend='False')
 
 if (($frontEndUrl -as [System.URI]).AbsoluteURI)
 {
@@ -9,19 +9,54 @@ else
     $frontEndUrl='*'
 }
 
-if ( $SwaggerUrl.IndexOf("/swagger") -ne -1 )
+if ($ApiType -eq 'Swagger')
 {
-    $index = $SwaggerUrl.IndexOf("/swagger")
-    $backend = $SwaggerUrl.SubString(0,$index)
+    if ( $ServiceURL.IndexOf("/swagger") -ne -1 )
+    {
+        $index = $ServiceURL.IndexOf("/swagger")
+        $backend = $ServiceURL.SubString(0,$index)
+    }
+    elseif ($ServiceURL.IndexOf("/openapi.json") -ne -1) 
+    {
+        $index = $ServiceURL.IndexOf("/openapi.json")
+        $backend = $ServiceURL.SubString(0,$index)  
+    }
+    else
+    {
+        Write-Host "Invalid Backend" 
+        exit 
+    }
 }
-elseif ($SwaggerUrl.IndexOf("/openapi.json") -ne -1) 
+elseif ($ApiType -eq 'WSDL')
 {
-    $index = $SwaggerUrl.IndexOf("/openapi.json")
-    $backend = $SwaggerUrl.SubString(0,$index)  
+    if (Test-Path -Path $ServiceURL -PathType leaf) 
+    {
+        $backend=[Security.SecurityElement]::Escape($wsdlBackend)
+    
+        $type='soap'
+    }
+    elseif( $ServiceURL.IndexOf("?wsdl") -ne -1 )
+    {
+        Write-Host "URL WSDL File"
+        exit
+    }
+    else
+    {
+        Write-Host "Invalid WSDL File"
+        exit
+    }
 }
-else
+elseif ($ApiType -eq 'WSDL2JSON')
 {
-    Write-Host "Invalid Backend" 
+    if (Test-Path -Path $ServiceURL -PathType leaf) 
+    {
+        $backend=[Security.SecurityElement]::Escape($wsdlBackend)
+        $type='http'
+    }
+}
+else 
+{
+    Write-Host "API Type is not supported yet" 
     exit 
 }
 
@@ -136,6 +171,115 @@ if ($HttpMethods -eq 'GPD')
         }
     }
 }
+elseif ($HttpMethods -eq 'GPU')
+{
+    if ($JWT -eq 'NO')
+    {
+        if ($BackendID -eq 'NO') 
+        {
+            $InboundPolicy = '<policies>
+            <inbound>
+                <base />
+                <cors>
+                    <allowed-origins>
+                        <origin>'+$frontEndUrl+'</origin>
+                    </allowed-origins>
+                    <allowed-methods>
+                        <method>GET</method>
+                        <method>POST</method>
+                        <method>PUT</method>
+                    </allowed-methods>
+                    <allowed-headers>
+                        <header>*</header>
+                    </allowed-headers>
+                </cors>
+                <set-backend-service base-url="'+$backend+'" />
+            </inbound>
+            </policies>'
+        }
+        else
+        {
+            $InboundPolicy = '<policies>
+            <inbound>
+                <base />
+                <cors>
+                    <allowed-origins>
+                        <origin>'+$frontEndUrl+'</origin>
+                    </allowed-origins>
+                    <allowed-methods>
+                        <method>GET</method>
+                        <method>POST</method>
+                        <method>PUT</method>
+                    </allowed-methods>
+                    <allowed-headers>
+                        <header>*</header>
+                    </allowed-headers>
+                </cors>
+                <set-backend-service backend-id="'+$BackendID+'" />
+            </inbound>
+            </policies>'
+        }
+    }
+    else 
+    {
+        if ($BackendID -eq 'NO') 
+        {
+            $InboundPolicy = '<policies>
+            <inbound>
+                <base />
+                <cors>
+                    <allowed-origins>
+                        <origin>'+$frontEndUrl+'</origin>
+                    </allowed-origins>
+                    <allowed-methods>
+                        <method>GET</method>
+                        <method>POST</method>
+                        <method>PUT</method>
+                    </allowed-methods>
+                    <allowed-headers>
+                        <header>*</header>
+                    </allowed-headers>
+                </cors>
+                <validate-jwt header-name="Authorization" failed-validation-httpcode="401" failed-validation-error-message="Unauthorized. Access token is missing or invalid." require-expiration-time="true" require-scheme="Bearer" require-signed-tokens="true">
+                <openid-config url="'+$JWTvalURL+'" />
+                <audiences>
+                    <audience>'+$audience+'</audience>
+                </audiences>
+                </validate-jwt>
+                <set-backend-service base-url="'+$backend+'" />
+            </inbound>
+            </policies>'
+        }
+        else 
+        {
+            $InboundPolicy = '<policies>
+            <inbound>
+                <base />
+                <cors>
+                    <allowed-origins>
+                        <origin>'+$frontEndUrl+'</origin>
+                    </allowed-origins>
+                    <allowed-methods>
+                        <method>GET</method>
+                        <method>POST</method>
+                        <method>PUT</method>
+                    </allowed-methods>
+                    <allowed-headers>
+                        <header>*</header>
+                    </allowed-headers>
+                </cors>
+                <validate-jwt header-name="Authorization" failed-validation-httpcode="401" failed-validation-error-message="Unauthorized. Access token is missing or invalid." require-expiration-time="true" require-scheme="Bearer" require-signed-tokens="true">
+                <openid-config url="'+$JWTvalURL+'" />
+                <audiences>
+                    <audience>'+$audience+'</audience>
+                </audiences>
+                </validate-jwt>
+                <set-backend-service backend-id="'+$BackendID+'" />
+            </inbound>
+            </policies>'
+        }
+    }
+}
 elseif ($HttpMethods -eq 'GPDU') 
 {
     if ($JWT -eq 'NO')
@@ -232,6 +376,123 @@ elseif ($HttpMethods -eq 'GPDU')
                         <method>POST</method>
                         <method>DELETE</method>
                         <method>PUT</method>
+                    </allowed-methods>
+                    <allowed-headers>
+                        <header>*</header>
+                    </allowed-headers>
+                </cors>
+                <validate-jwt header-name="Authorization" failed-validation-httpcode="401" failed-validation-error-message="Unauthorized. Access token is missing or invalid." require-expiration-time="true" require-scheme="Bearer" require-signed-tokens="true">
+                <openid-config url="'+$JWTvalURL+'" />
+                <audiences>
+                    <audience>'+$audience+'</audience>
+                </audiences>
+                </validate-jwt>
+                <set-backend-service backend-id="'+$BackendID+'" />
+            </inbound>
+            </policies>'
+        }
+    }
+}
+elseif ($HttpMethods -eq 'GPDUA')
+{
+    if ($JWT -eq 'NO')
+    {
+        if ($BackendID -eq 'NO')
+        {
+            $InboundPolicy = '<policies>
+            <inbound>
+                <base />
+                <cors>
+                    <allowed-origins>
+                        <origin>'+$frontEndUrl+'</origin>
+                    </allowed-origins>
+                    <allowed-methods>
+                        <method>GET</method>
+                        <method>POST</method>
+                        <method>DELETE</method>
+                        <method>PUT</method>
+                        <method>PATCH</method>
+                    </allowed-methods>
+                    <allowed-headers>
+                        <header>*</header>
+                    </allowed-headers>
+                </cors>
+                <set-backend-service base-url="'+$backend+'" />
+            </inbound>
+            </policies>'
+        }
+        else 
+        {
+            $InboundPolicy = '<policies>
+            <inbound>
+                <base />
+                <cors>
+                    <allowed-origins>
+                        <origin>'+$frontEndUrl+'</origin>
+                    </allowed-origins>
+                    <allowed-methods>
+                        <method>GET</method>
+                        <method>POST</method>
+                        <method>DELETE</method>
+                        <method>PUT</method>
+                        <method>PATCH</method>
+                    </allowed-methods>
+                    <allowed-headers>
+                        <header>*</header>
+                    </allowed-headers>
+                </cors>
+                <set-backend-service backend-id="'+$BackendID+'" />
+            </inbound>
+            </policies>'
+        }
+    }
+    else 
+    {
+        if ($BackendID -eq 'NO') 
+        {
+            $InboundPolicy = '<policies>
+            <inbound>
+                <base />
+                <cors>
+                    <allowed-origins>
+                        <origin>'+$frontEndUrl+'</origin>
+                    </allowed-origins>
+                    <allowed-methods>
+                        <method>GET</method>
+                        <method>POST</method>
+                        <method>DELETE</method>
+                        <method>PUT</method>
+                        <method>PATCH</method>
+                    </allowed-methods>
+                    <allowed-headers>
+                        <header>*</header>
+                    </allowed-headers>
+                </cors>
+                <validate-jwt header-name="Authorization" failed-validation-httpcode="401" failed-validation-error-message="Unauthorized. Access token is missing or invalid." require-expiration-time="true" require-scheme="Bearer" require-signed-tokens="true">
+                <openid-config url="'+$JWTvalURL+'" />
+                <audiences>
+                    <audience>'+$audience+'</audience>
+                </audiences>
+                </validate-jwt>
+                <set-backend-service base-url="'+$backend+'" />
+            </inbound>
+            </policies>'
+        }
+        else 
+        {
+            $InboundPolicy = '<policies>
+            <inbound>
+                <base />
+                <cors>
+                    <allowed-origins>
+                        <origin>'+$frontEndUrl+'</origin>
+                    </allowed-origins>
+                    <allowed-methods>
+                        <method>GET</method>
+                        <method>POST</method>
+                        <method>DELETE</method>
+                        <method>PUT</method>
+                        <method>PATCH</method>
                     </allowed-methods>
                     <allowed-headers>
                         <header>*</header>
@@ -455,6 +716,107 @@ elseif ($HttpMethods -eq 'P')
         }
     }
 }
+elseif ($HttpMethods -eq 'G') 
+{
+    if ($JWT -eq 'NO')
+    {
+        if ($BackendID -eq 'NO') 
+        {
+            $InboundPolicy = '<policies>
+            <inbound>
+                <base />
+                <cors>
+                    <allowed-origins>
+                        <origin>'+$frontEndUrl+'</origin>
+                    </allowed-origins>
+                    <allowed-methods>
+                        <method>GET</method>
+                    </allowed-methods>
+                    <allowed-headers>
+                        <header>*</header>
+                    </allowed-headers>
+                </cors>
+                <set-backend-service base-url="'+$backend+'" />
+            </inbound>
+            </policies>'
+        }
+        else 
+        {
+            $InboundPolicy = '<policies>
+            <inbound>
+                <base />
+                <cors>
+                    <allowed-origins>
+                        <origin>'+$frontEndUrl+'</origin>
+                    </allowed-origins>
+                    <allowed-methods>
+                        <method>GET</method>
+                    </allowed-methods>
+                    <allowed-headers>
+                        <header>*</header>
+                    </allowed-headers>
+                </cors>
+                <set-backend-service backend-id="'+$BackendID+'" />
+            </inbound>
+            </policies>'
+        }
+    }
+    else 
+    {
+        if ($BackendID -eq 'NO') 
+        {
+            $InboundPolicy = '<policies>
+            <inbound>
+                <base />
+                <cors>
+                    <allowed-origins>
+                        <origin>'+$frontEndUrl+'</origin>
+                    </allowed-origins>
+                    <allowed-methods>
+                        <method>GET</method>
+                    </allowed-methods>
+                    <allowed-headers>
+                        <header>*</header>
+                    </allowed-headers>
+                </cors>
+                <validate-jwt header-name="Authorization" failed-validation-httpcode="401" failed-validation-error-message="Unauthorized. Access token is missing or invalid." require-expiration-time="true" require-scheme="Bearer" require-signed-tokens="true">
+                <openid-config url="'+$JWTvalURL+'" />
+                <audiences>
+                    <audience>'+$audience+'</audience>
+                </audiences>
+                </validate-jwt>
+                <set-backend-service base-url="'+$backend+'" />
+            </inbound>
+            </policies>'
+        }
+        else 
+        {
+            $InboundPolicy = '<policies>
+            <inbound>
+                <base />
+                <cors>
+                    <allowed-origins>
+                        <origin>'+$frontEndUrl+'</origin>
+                    </allowed-origins>
+                    <allowed-methods>
+                        <method>GET</method>
+                    </allowed-methods>
+                    <allowed-headers>
+                        <header>*</header>
+                    </allowed-headers>
+                </cors>
+                <validate-jwt header-name="Authorization" failed-validation-httpcode="401" failed-validation-error-message="Unauthorized. Access token is missing or invalid." require-expiration-time="true" require-scheme="Bearer" require-signed-tokens="true">
+                <openid-config url="'+$JWTvalURL+'" />
+                <audiences>
+                    <audience>'+$audience+'</audience>
+                </audiences>
+                </validate-jwt>
+                <set-backend-service backend-id="'+$BackendID+'" />
+            </inbound>
+            </policies>'
+        }
+    }
+}
 else 
 {    
     if ($JWT -eq 'NO')
@@ -514,25 +876,43 @@ try {
 
     if ($Connection)
     {
+
         # Get Context to API Management Resource Group and API Management Service
         $Context = New-AzApiManagementContext -resourcegroup $rgName -servicename $apiMGMService
         # Get API information $api.ApiId contains the API id
+
         $api=Get-AzApiManagementApi -Context $Context -Name $apiName
 
         Write-Output $api
         Write-Output "`a"
         # Remove API and asks for confirmation
         Remove-AzApiManagementApi -Context $Context -ApiId $api.ApiId -Confirm
+    
         # Import the API from Swagger URL 
-        $newAPi=Import-AzApiManagementApi -Context $Context -ApiId $apiName.ToLower() -SpecificationFormat 'OpenApi' -SpecificationUrl $SwaggerUrl -Path $apiPrefix
+            
+        if ($ApiType -eq 'Swagger')
+        {            
+            $newAPi=Import-AzApiManagementApi -Context $Context -ApiId $apiName.ToLower() -SpecificationFormat 'OpenApi' -SpecificationUrl $ServiceURL -Path $apiPrefix
+        }
+        elseif ($ApiType -eq 'WSDL') 
+        {
+            $newAPi=Import-AzApiManagementApi -Context $Context -ApiId $apiName.ToLower() -ApiType $type -SpecificationFormat 'WSDL' -SpecificationPath $ServiceURL -Path $apiPrefix -WsdlServiceName $wsdlName -WsdlEndpointName $wsdlEndPointName
+        }
+        else 
+        {
+            Write-Host "API Type is not supported yet for creation" 
+            exit 
+        }
 
         $dt=Get-Date
 
-        if (-not $newApi) {
+        if (-not $newApi) 
+        {
 
             Write-Host "Impossible to create API "$apiName 
         }
-        else {
+        else 
+        {
             Set-AzApiManagementApi -Context $Context -ApiId $apiName.ToLower() -Protocols @('https') -SubscriptionRequired -Name $apiName -Description $apiName' Ticket:'$ticket' Refreshed by AzRefreshAPIBySwagger.ps1 on '$dt 
             Write-Output $newApi
 
@@ -543,7 +923,7 @@ try {
     }
     else
     {
-        Write-Host "Invalid Login" 
+        Write-Host "Cannot Continue - Invalid Login" 
         exit 
     }
 }
