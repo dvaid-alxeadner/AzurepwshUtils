@@ -1,4 +1,4 @@
-param ($SubscriptionId='aaaaaaaa-bbbb-cccc-eeee-fffffffffff', $TenantPosto='aaaaaaaa-bbbb-cccc-eeee-fffffffffff', $rgName='RG_XXX_YYY', $apiMGMService='APIMGMTXXX', $apiName, $apiPrefix, $apiProductId, $ServiceURL, $HttpMethods = 'NO', $frontEndUrl, $JWT = 'NO', $JWTvalURL = 'https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration', $audience ='NO', $ticket, $BackendID='NO', $ApiType='Swagger', $wsdlBackend='False')
+param ($SubscriptionId='aaaaaaaa-bbbb-cccc-eeee-fffffffffff', $TenantPosto='aaaaaaaa-bbbb-cccc-eeee-fffffffffff', $rgName='RG_XXX_YYY', $apiMGMService='APIMGMTXXX', $apiName, $apiPrefix, $apiProductId, $ServiceURL, $HttpMethods = 'NO', $frontEndUrl, $JWT = 'NO', $JWTvalURL = 'https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration', $audience ='NO', $ticket, $BackendID='NO', $ApiType='Swagger', $wsdlBackend='False',$backendExplicitForFile='NO')
 
 if (($frontEndUrl -as [System.URI]).AbsoluteURI)
 {
@@ -21,6 +21,30 @@ if ($ApiType -eq 'Swagger')
         $index = $ServiceURL.IndexOf("/openapi.json")
         $backend = $ServiceURL.SubString(0,$index)  
     }
+    elseif (Test-Path -Path $ServiceURL -PathType leaf) 
+    {
+        Write-Host "Open API Specification From file: "$ServiceURL
+
+        if ($backendExplicitForFile -ne "NO") 
+        {
+            if (($backendExplicitForFile -as [System.URI]).AbsoluteURI ) 
+            {
+                $backend=$backendExplicitForFile
+            }
+            else 
+            {
+                Write-Host "Invalid Backend Explicit For File Open API Specification"
+                exit
+            }
+            
+        }
+        else 
+        {
+            Write-Host "Invalid Backend"
+            exit
+        }
+
+    }
     else
     {
         Write-Host "Invalid Backend" 
@@ -32,6 +56,17 @@ elseif ($ApiType -eq 'WSDL')
     if (Test-Path -Path $ServiceURL -PathType leaf) 
     {
         $backend=[Security.SecurityElement]::Escape($wsdlBackend)
+
+        '''[xml]$XmlWSDL = Get-Content -Path $ServiceURL
+        $wsdlAttributes=$XmlWSDL.FirstChild.NextSibling.Attributes
+
+        foreach ($item in $wsdlAttributes) 
+        {
+            if ($item.Name -eq name)
+            {
+                $wsdlName=$item.Value
+            }
+        }'''
     
         $type='soap'
     }
@@ -60,7 +95,10 @@ else
     exit 
 }
 
-Write-Host $backend" is the right backend for the API?"
+if($backend)
+{
+    Write-Host $backend" is the right backend for the API?"
+}
 
 if ($HttpMethods -eq 'GPD')
 {
@@ -887,38 +925,53 @@ try {
         Write-Output "`a"
         # Remove API and asks for confirmation
         Remove-AzApiManagementApi -Context $Context -ApiId $api.ApiId -Confirm
-    
-        # Import the API from Swagger URL 
-            
-        if ($ApiType -eq 'Swagger')
-        {            
-            $newAPi=Import-AzApiManagementApi -Context $Context -ApiId $apiName.ToLower() -SpecificationFormat 'OpenApi' -SpecificationUrl $ServiceURL -Path $apiPrefix
-        }
-        elseif ($ApiType -eq 'WSDL') 
+
+        if (Get-AzApiManagementApi -Context $Context -ApiId $api.ApiId -ErrorAction SilentlyContinue)
         {
-            $newAPi=Import-AzApiManagementApi -Context $Context -ApiId $apiName.ToLower() -ApiType $type -SpecificationFormat 'WSDL' -SpecificationPath $ServiceURL -Path $apiPrefix -WsdlServiceName $wsdlName -WsdlEndpointName $wsdlEndPointName
+            Write-Host "Operation over $apiName cancelled"
+            exit
         }
         else 
         {
-            Write-Host "API Type is not supported yet for creation" 
-            exit 
-        }
+            # Import the API from Swagger URL 
+                
+            if ($ApiType -eq 'Swagger')
+            {            
+                if(Test-Path -Path $ServiceURL -PathType leaf) 
+                {
+                    $newAPi=Import-AzApiManagementApi -Context $Context -ApiId $apiName.ToLower() -SpecificationFormat 'OpenApi' -SpecificationPath $ServiceURL -Path $apiPrefix
+                }
+                else 
+                {
+                    $newAPi=Import-AzApiManagementApi -Context $Context -ApiId $apiName.ToLower() -SpecificationFormat 'OpenApi' -SpecificationUrl $ServiceURL -Path $apiPrefix
+                }
+            }
+            elseif ($ApiType -eq 'WSDL') 
+            {
+                $newAPi=Import-AzApiManagementApi -Context $Context -ApiId $apiName.ToLower() -ApiType $type -SpecificationFormat 'WSDL' -SpecificationPath $ServiceURL -Path $apiPrefix -WsdlServiceName $wsdlName -WsdlEndpointName $wsdlEndPointName
+            }
+            else 
+            {
+                Write-Host "API Type is not supported yet for creation" 
+                exit 
+            }
 
-        $dt=Get-Date
+            $dt=Get-Date
 
-        if (-not $newApi) 
-        {
+            if (-not $newApi) 
+            {
 
-            Write-Host "Impossible to create API "$apiName 
-        }
-        else 
-        {
-            Set-AzApiManagementApi -Context $Context -ApiId $apiName.ToLower() -Protocols @('https') -SubscriptionRequired -Name $apiName -Description $apiName' Ticket:'$ticket' Refreshed by AzRefreshAPIBySwagger.ps1 on '$dt 
-            Write-Output $newApi
+                Write-Host "Impossible to create API "$apiName 
+            }
+            else 
+            {
+                Set-AzApiManagementApi -Context $Context -ApiId $apiName.ToLower() -Protocols @('https') -SubscriptionRequired -Name $apiName -Description $apiName' Ticket:'$ticket' Refreshed by AzRefreshAPIBySwagger.ps1 on '$dt 
+                Write-Output $newApi
 
-            # Writes the inbound Policy defined for the API
-            Set-AzApiManagementPolicy -Context $Context -ApiId $newApi.ApiId -Policy $InboundPolicy
-            Add-AzApiManagementApiToProduct -Context $Context -ProductId $apiProductId -ApiId $apiName.ToLower()
+                # Writes the inbound Policy defined for the API
+                Set-AzApiManagementPolicy -Context $Context -ApiId $newApi.ApiId -Policy $InboundPolicy
+                Add-AzApiManagementApiToProduct -Context $Context -ProductId $apiProductId -ApiId $apiName.ToLower()
+            }
         }
     }
     else
