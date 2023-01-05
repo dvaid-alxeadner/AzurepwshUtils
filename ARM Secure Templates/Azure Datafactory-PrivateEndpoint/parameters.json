@@ -1,0 +1,53 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "name": {
+        "value": "datafactory2023",
+        "metadata": {
+            "description": "Data factory name"
+        }
+        },
+        "location": {
+            "value": "East US 2",
+            "metadata": {
+                "description": "Location of the data factory."
+            }
+        },
+        "privateEndpointName": {
+            "value": "PE_DTFY",
+            "metadata": {
+                "description": "Private endpoint name."
+            }
+        },
+        "privateLinkResource": {
+            "value": "/subscriptions/<SubscriptionID>/resourceGroups/<ResourceGroupName>/providers/Microsoft.DataFactory/factories/<DatafactoryName>"
+        },
+        "targetSubResource": {
+            "value": [
+                "dataFactory"
+            ]
+        },
+        "subnet": {
+            "value": "/subscriptions/<SubscriptionID>/resourceGroups/<ResourceGroupName>/providers/Microsoft.Network/virtualNetworks/<VNETName>/subnets/<SubnetName>",
+            "metadata": {
+                "description": "id for the subnet which private endpoint will be connected"
+            }
+        },
+        "environment_tag":
+        {
+            "value":"TEST",
+            "metadata": {
+                "description": "Tag to describe the enviroment"
+            }
+        },
+        "oi_tag":
+        {
+            "value":"4909000112",
+            "metadata": {
+                "description": "Tag for budget classification"
+            }
+        }
+    }
+}
+
