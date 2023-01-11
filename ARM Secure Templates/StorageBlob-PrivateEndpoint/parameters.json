@@ -2,6 +2,18 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+        "subscriptionId": {
+            "value": "<aabbccdd-ffff-aabb-ccdd-aabbccddeeff>",
+            "metadata": {
+                "description": "id of the Azure Subscription"
+            }
+        },
+        "resourceGroup":{
+            "value": "<Resource Group>",
+            "metadata":{
+                "description": "Resource group name."
+            }
+        },
         "storageAccountName": {
             "value": "storagedic22",
             "metadata": {
@@ -58,9 +70,6 @@
             "metadata": {
                 "description": "Private endpoint name."
             }
-        },
-        "privateLinkResource": {
-            "value": "/subscriptions/<SubscriptionID>/resourcegroups/<ResourceGroupName>/providers/Microsoft.Storage/storageAccounts/<StorageAccountName>"
         },
         "targetSubResource": {
             "value": [
