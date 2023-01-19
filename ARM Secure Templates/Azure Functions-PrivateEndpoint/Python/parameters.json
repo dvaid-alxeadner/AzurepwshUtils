@@ -1,0 +1,88 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "subscriptionId": {
+            "value": "e9ba7be7-6071-4cba-8cd0-dd3f10fdefa4",
+            "metadata": {
+                "description": "id of the Azure Subscription"
+            }
+        },
+        "name": {
+            "value": "azfuncpy",
+            "metadata": {
+                "description": "Function name."
+            }
+        },
+        "location": {
+            "value": "East US 2",
+            "metadata": {
+                "description": "Location of the Azure Function."
+            }
+        },
+        "hostingPlanName": {
+            "value": "appservplanlinux",
+            "metadata": {
+                "description": "Service Plan name."
+            }
+        },
+        "serverFarmResourceGroup": {
+            "value": "GR_EVENTHUB-PRB",
+            "metadata": {
+                "description": "Resource group name."
+            }
+        },
+        "alwaysOn": {
+            "value": false,
+            "metadata": {
+                "description": "If the function is always on or it can be deallocated"
+            }
+        },
+        "storageAccountName": {
+            "value": "storagedic22",
+            "metadata": {
+                "description": "Storage account name"
+            }
+        },
+        "use32BitWorkerProcess": {
+            "value": false
+        },
+        "linuxFxVersion": {
+            "value": "Python|3.9",
+            "metadata": {
+                "description": "Python version"
+            }
+        },
+        "privateEndpointName": {
+            "value": "PE_AZFUNCTIONPYTHON",
+            "metadata": {
+                "description": "Private endpoint name."
+            }
+        },
+        "targetSubResource": {
+            "value": [
+                "sites"
+            ]
+        },
+        "subnet": {
+            "value": "/subscriptions/e9ba7be7-6071-4cba-8cd0-dd3f10fdefa4/resourceGroups/GR_EVENTHUB-PRB/providers/Microsoft.Network/virtualNetworks/VNET_TEST_SEG/subnets/SB_GENERIC",
+            "metadata": {
+                "description": "id for the subnet which private endpoint will be connected"
+            }
+        },
+        "environment_tag":
+        {
+            "value":"PRUEBAS",
+            "metadata": {
+                "description": "Tag to describe the enviroment"
+            }
+        },
+        "oi_tag":
+        {
+            "value":"600085214",
+            "metadata": {
+                "description": "Tag for budget classification"
+            }
+        }
+    }
+}
