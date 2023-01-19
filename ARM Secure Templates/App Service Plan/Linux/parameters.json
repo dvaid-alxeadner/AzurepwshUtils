@@ -1,0 +1,45 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "name": {
+            "value": "appserviceplanlinux",
+            "metadata": {
+                "description": "App Service Plan Name"
+            }
+        },
+        "location": {
+            "value": "East US 2",
+            "metadata": {
+                "description": "Location of the App Service Plan"
+            }
+        },
+        "numberOfWorkers": {
+            "value": "1",
+            "metadata": {
+                "description": "App Service Backbone unit"
+            }
+        },
+        "sku": {
+            "value": "Basic",
+            "metadata": {
+                "description": "Stock Keeping Unit"
+            }
+        },
+        "skuCode": {
+            "value": "B1"
+        },
+        "workerSize": {
+            "value": "0",
+            "metadata": {
+                "description": "M size of the worker pool instances"
+            }
+        },
+        "workerSizeId": {
+            "value": "0",
+            "metadata": {
+                "description": "Worker size ID for referencing the worker pool"
+            }
+        }
+    }
+}
