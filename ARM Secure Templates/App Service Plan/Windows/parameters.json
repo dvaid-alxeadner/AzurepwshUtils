@@ -3,7 +3,7 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "name": {
-            "value": "appserviceplan20221222".
+            "value": "appserviceplan20221222",
             "metadata": {
                 "description": "App Service Plan Name"
             }
