@@ -2,8 +2,20 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+        "subscriptionId": {
+            "value": "<aabbccdd-ffff-aabb-ccdd-aabbccddeeff>",
+            "metadata": {
+                "description": "id of the Azure Subscription"
+            }
+        },
+        "resourceGroup":{
+            "value": "<Resource Group>",
+            "metadata":{
+                "description": "Resource group name."
+            }
+        },
         "name": {
-        "value": "datafactory2023",
+        "value": "datafactory20230126",
         "metadata": {
             "description": "Data factory name"
         }
@@ -20,16 +32,13 @@
                 "description": "Private endpoint name."
             }
         },
-        "privateLinkResource": {
-            "value": "/subscriptions/<SubscriptionID>/resourceGroups/<ResourceGroupName>/providers/Microsoft.DataFactory/factories/<DatafactoryName>"
-        },
         "targetSubResource": {
             "value": [
                 "dataFactory"
             ]
         },
         "subnet": {
-            "value": "/subscriptions/<SubscriptionID>/resourceGroups/<ResourceGroupName>/providers/Microsoft.Network/virtualNetworks/<VNETName>/subnets/<SubnetName>",
+            "value": "/subscriptions/<SubscriptionID>/resourceGroups/<ResourceGroupName>/providers/Microsoft.Network/virtualNetworks/<VNETName>/subnets/<Subnet Name>",
             "metadata": {
                 "description": "id for the subnet which private endpoint will be connected"
             }
@@ -43,7 +52,7 @@
         },
         "oi_tag":
         {
-            "value":"4909000112",
+            "value":"10000111",
             "metadata": {
                 "description": "Tag for budget classification"
             }
