@@ -451,7 +451,7 @@ try {
         # Public network access on Azure SQL Database should be disabled DENY
         # Effect Audit
         $policyName = "deny-publicaccess-asql"
-        $displayName = "45) Azure SQL Managed Instance should have Azure Active Directory Only Authentication"
+        $displayName = "45) Public network access on Azure SQL Database should be disabled"
         $Description = "Para cumplir la linea base de seguridad de Azure las bases de datos Azure SQL deben tener deshabilitado el acceso publico."
         ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/1b8ca024-1d5c-4dec-8995-b1a932b41780" $Description $policyName $scope $displayName "Y"
 
