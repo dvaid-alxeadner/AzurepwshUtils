@@ -860,22 +860,83 @@ try {
         ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/8632b003-3545-4b29-85e6-b2b96773df1e" $Description $policyName $scope $displayName "Y"
      
         # Subnets should be associated with a Network Security Group AuditIfNotExist
+        # Effect Audit
         $policyName = "audit-sbnet-nsg"
         $displayName = "107) Subnets should be associated with a Network Security Group"
         $Description = "Para cumplir la linea base de seguridad de Azure todas las subredes deben estar asociadas a un Network Security Group con reglas especificas."
         ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/e71308d3-144b-4262-b144-efdc3cc90517" $Description $policyName $scope $displayName "Y"
 
-        # Flow logs should be enabled for every network security group Audit                                                                     
+        # Flow logs should be enabled for every network security group Audit
+        # Effect Audit
         $policyName = "audit-flowlogs-nsg"
         $displayName = "108) Flow logs should be enabled for every network security group"
         $Description = "Para cumplir la linea base de seguridad de Azure los Network Security Group deben tener habilitador los logs."
         ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/27960feb-a23c-4577-8d36-ef8b5f35e0be" $Description $policyName $scope $displayName "Y"
 
         # Gateway subnets should not be configured with a network security group NO PARAMETER
+        # Effect Audit
         $policyName = "audit-gwsbnet-nsg"
         $displayName = "109) Gateway subnets should not be configured with a network security group"
         $Description = "Para cumplir la linea base de seguridad de las Gateway subnets no deben tener un Network Security Group."
         ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/35f9c03a-cc27-418e-9c0c-539ff999d010" $Description $policyName $scope $displayName "Y"
+        
+        # Azure Event Hub namespaces should have local authentication methods disabled DENY
+        # Effect Audit
+        $policyName = "deny-dlocalauth-ehub"
+        $displayName = "110) Azure Event Hub namespaces should have local authentication methods disabled"
+        $Description = "Para cumplir la linea base de seguridad de los Event Hub namespaces deben tener deshabilitada la autenticacion local y en su lugar se debe realizar mediante Azure Active Directory."
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/5d4e3c65-4873-47be-94f3-6f8b953a3598" $Description $policyName $scope $displayName "Y"
+        
+        # Event Hub namespaces should have double encryption enabled DENY
+        # Effect Audit
+        $policyName = "deny-doubleencrypt-ehub"
+        $displayName = "111) Event Hub namespaces should have double encryption enabled"
+        $Description = "Para cumplir la linea base de seguridad de Azure los Event Hub namespaces deben tener habilitado el doble cifrado."
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/836cd60e-87f3-4e6a-a27c-29d687f01a4c" $Description $policyName $scope $displayName "Y"
+        
+        # Resource logs in Event Hub should be enabled AuditIFNotExists
+        # Effect Audit
+        $policyName = "audit-reslogs-ehub"
+        $displayName = "112) Resource logs in Event Hub should be enabled"
+        $Description = "Para cumplir la linea base de seguridad de Azure los Event Hub deben retener los logs del recurso por un periodo de tiempo superior a 90 dias."
+        $requireRetentionDays = "90"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/83a214f7-d01a-484b-91a9-ed54470c9a6a" $Description $policyName $scope $displayName "Y" "AuditIfNotExists" $requireRetentionDays "requiredRetentionDays"
+        
+        # All authorization rules except RootManageSharedAccessKey should be removed from Event Hub namespace DENY
+        # Effect Audit
+        $policyName = "deny-authrules-ehub"
+        $displayName = "113) All authorization rules except RootManageSharedAccessKey should be removed from Event Hub namespace"
+        $Description = "Para cumplir la linea base de seguridad de Azure todas las reglas de autorizacion excepto RootManageSharedAccessKey deben ser removidas del namespace del event hub."
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/b278e460-7cfc-4451-8294-cccc40a940d7" $Description $policyName $scope $displayName "Y"
+
+        # Event Hub namespaces should use private link AuditIFNotExists
+        # Effect Audit
+        $policyName = "audit-plink-ehub"
+        $displayName = "114) Event Hub namespaces should use private link"
+        $Description = "Para cumplir la linea base de seguridad de Azure los Event Hub namespaces deben estar conectados a una VNET"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/b8564268-eb4a-4337-89be-a19db070c59d" $Description $policyName $scope $displayName "Y"
+
+        # Azure Databricks Workspaces should disable public network access DENY
+        # Effect Audit
+        $policyName = "deny-publicaccess-dtbrcks"
+        $displayName = "115) Azure Databricks Workspaces should disable public network access"
+        $Description = "Para cumplir la linea base de seguridad de Azure los Databricks Workspaces deben tener deshabilitado el acceso publico"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/0e7849de-b939-4c50-ab48-fc6b0f5eeba2" $Description $policyName $scope $displayName "Y"
+
+        # Clusters that are part of Azure Databricks Workspaces should disable public IP DENY
+        # Effect Audit
+        $policyName = "deny-publicaccess-dtbrckscluster"
+        $displayName = "116) Clusters that are part of Azure Databricks Workspaces should disable public IP"
+        $Description = "Para cumplir la linea base de seguridad de Azure los cluster que hacen parte de Databricks Workspaces deben tener deshabilitado el direccionamiento IP publico"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/51c1490f-3319-459c-bbbc-7f391bbed753" $Description $policyName $scope $displayName "Y"
+
+        # Resource logs in Azure Databricks Workspace should be enabled AuditIFNotExists
+        # Effect Audit
+        $policyName = "audit-reslogs-dtbrcks"
+        $displayName = "117) Resource logs in Azure Databricks Workspace should be enabled"
+        $Description = "Para cumplir la linea base de seguridad de Azure los Databricks Workspace deben retener los logs del recurso por un periodo de tiempo superior a 90 dias."
+        $requireRetentionDays = "90"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/138ff14d-b687-4faa-a81c-898c91a87fa2" $Description $policyName $scope $displayName "Y" "AuditIfNotExists" $requireRetentionDays "requiredRetentionDays"
     }
 }
 Catch
