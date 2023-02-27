@@ -1,0 +1,88 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+         "subscriptionId": {
+            "type": "string"
+        },
+        "resourceGroup":{
+            "type": "string"
+        },
+        "redisname": {
+            "type": "string"
+        },
+        "location": {
+            "type": "string"
+        },
+        "privateEndpointName": {
+            "type": "string"
+        },
+        "targetSubResource": {
+            "type": "array"
+        },
+        "subnet": {
+            "type": "string"
+        },
+        "environment_tag":
+        {
+            "type": "string"
+        },
+        "oi_tag":
+        {
+            "type": "string"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Cache/Redis",
+            "apiVersion": "2022-06-01",
+            "name": "[parameters('redisname')]",
+            "location": "[parameters('location')]",
+            "tags": {
+                "AMBIENTE": "[parameters('environment_tag')]",
+                "OI": "[parameters('oi_tag')]"
+            },
+            "properties": {
+                "redisVersion": "6.0",
+                "sku": {
+                    "name": "Basic",
+                    "family": "C",
+                    "capacity": 0
+                },
+                "enableNonSslPort": false,
+                "minimumTlsVersion": "1.2",
+                "publicNetworkAccess": "Disabled",
+                "redisConfiguration": {
+                    "maxmemory-reserved": "30",
+                    "maxfragmentationmemory-reserved": "30",
+                    "maxmemory-policy": "volatile-lru",
+                    "maxmemory-delta": "30"
+                }
+            }
+        },
+        {
+            "location": "[parameters('location')]",
+            "name": "[parameters('privateEndpointName')]",
+            "type": "Microsoft.Network/privateEndpoints",
+            "apiVersion": "2021-05-01",
+            "properties": {
+                "subnet": {
+                    "id": "[parameters('subnet')]"
+                },
+                "customNetworkInterfaceName":  "[concat(parameters('privateEndpointName'),'-nic')]",
+                "privateLinkServiceConnections": [
+                    {
+                        "name": "[parameters('privateEndpointName')]",
+                        "properties": {
+                            "privateLinkServiceId": "[concat('/subscriptions/',parameters('subscriptionId'),'/resourcegroups/',parameters('resourceGroup'),'/providers/Microsoft.Cache/Redis/',parameters('redisname'))]",
+                            "groupIds": "[parameters('targetSubResource')]"
+                        }
+                    }
+                ]
+            },
+            "tags": {},
+            "dependsOn": ["[concat('Microsoft.Cache/Redis/', parameters('redisname'))]"]
+        }
+    ]
+}
