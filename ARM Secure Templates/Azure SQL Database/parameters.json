@@ -1,0 +1,143 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "subscriptionId": {
+            "value": "<aabbccdd-ffff-aabb-ccdd-aabbccddeeff>",
+            "metadata": {
+                "description": "id of the Azure Subscription"
+            }
+        },
+        "resourceGroup":{
+            "value": "<Resource Group>",
+            "metadata":{
+                "description": "Resource group name."
+            }
+        },
+        "location": {
+            "value": "eastus2",
+            "metadata": {
+                "description": "Location of the cache for redis."
+            }
+        },
+        "serverName": {
+            "value": "sqlserver20230302",
+            "metadata": {
+                "description": "Server name."
+            }
+        },
+        "databaseName": {
+            "value": "sqldb20230302",
+            "metadata": {
+                "description": "Database name."
+            }
+        },
+        "collation": {
+            "value": "SQL_Latin1_General_CP1_CI_AS",
+            "metadata": {
+                "description": "Collation of the database."
+            }
+        },
+        "tier": {
+            "value": "GeneralPurpose",
+            "metadata": {
+                "description": "An identifier for the machine type."
+            }
+        },
+        "skuName": {
+            "value": "GP_S_Gen5_1",
+            "metadata": {
+                "description": "Stock Keeping Unit (Standard/Premium)."
+            }
+        },
+        "maxSizeBytes": {
+            "value": 10737418240,
+            "metadata": {
+                "description": "Max size of the database expressed in bytes."
+            }
+        },
+        "zoneRedundant": {
+            "value": false,
+            "metadata": {
+                "description": "Whether or not this database is zone redundant, which means the replicas of this database will be spread across multiple availability zones."
+            }
+        },
+        "readScaleOut": {
+            "value": "Disabled",
+            "metadata": {
+                "description": "If enabled, connections that have application intent set to readonly in their connection string may be routed to a readonly secondary replica in the same region."
+            }
+        },
+        "minCapacity": {
+            "value": "0.5",
+            "metadata": {
+                "description": "Minimal capacity that database will always have allocated, if not paused."
+            }
+        },
+        "autoPauseDelay": {
+            "value": "60",
+            "metadata": {
+                "description": "Time in minutes after which database is automatically paused. A value of -1 means that automatic pause is disabled."
+            }
+        },
+        "numberOfReplicas": {
+            "value": 0,
+            "metadata": {
+                "description": "Number of database replicas."
+            }
+        },
+        "connectionType": {
+            "value": "Default",
+            "metadata": {
+                "description": "Values for type of connection to the database (Default, proxy, redirect)."
+            }
+        },
+        "requestedBackupStorageRedundancy": {
+            "value": "Local"
+        },
+        "administrators": {
+            "value": {
+                "administratorType": "activeDirectory",
+                "login": "<upn@domain>",
+                "sid": "<aabbccdd-ffff-aabb-ccdd-aabbccddeeff>",
+                "tenantId": "<aabbccdd-ffff-aabb-ccdd-aabbccddeeff>",
+                "azureADOnlyAuthentication": true,
+                "principalType": "User"
+            },
+            "metadata": {
+                "description": "Object from Azure Active Directory who has administrative responsibilities over the database"
+            }
+        },
+        "privateEndpointName": {
+            "value": "PE_SQL",
+            "metadata": {
+                "description": "Private endpoint name."
+            }
+        },
+        "targetSubResource": {
+            "value": [
+                "sqlServer"
+            ]
+        },
+        "subnet": {
+            "value": "/subscriptions/<SubscriptionID>/resourceGroups/<ResourceGroupName>/providers/Microsoft.Network/virtualNetworks/<VNETName>/subnets/<Subnet Name>",
+            "metadata": {
+                "description": "id for the subnet which private endpoint will be connected"
+            }
+        },
+        "environment_tag":
+        {
+            "value":"TEST",
+            "metadata": {
+                "description": "Tag to describe the enviroment"
+            }
+        },
+        "oi_tag":
+        {
+            "value":"10000111",
+            "metadata": {
+                "description": "Tag for budget classification"
+            }
+        }
+    }
+}
