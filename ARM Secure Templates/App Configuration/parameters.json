@@ -1,0 +1,61 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "subscriptionId": {
+            "value": "<aabbccdd-ffff-aabb-ccdd-aabbccddeeff>",
+            "metadata": {
+                "description": "id of the Azure Subscription"
+            }
+        },
+        "resourceGroup":{
+            "value": "<Resource Group>",
+            "metadata":{
+                "description": "Resource group name."
+            }
+        },
+        "location": {
+            "value": "eastus2",
+            "metadata": {
+                "description": "Location of the app configuration."
+            }
+        },
+        "appconfname": {
+            "value": "appconfiguration20230302",
+	    "metadata": {
+                "description": "App configuration name."
+            }
+        },
+        "privateEndpointName": {
+            "value": "PE_APPCONF",
+            "metadata": {
+                "description": "Private endpoint name."
+            }
+        },
+        "targetSubResource": {
+            "value": [
+                "configurationStores"
+            ]
+        },
+        "subnet": {
+            "value": "/subscriptions/<SubscriptionID>/resourceGroups/<ResourceGroupName>/providers/Microsoft.Network/virtualNetworks/<VNETName>/subnets/<Subnet Name>",
+            "metadata": {
+                "description": "id for the subnet which private endpoint will be connected"
+            }
+        },
+        "environment_tag":
+        {
+            "value":"PRUEBAS",
+            "metadata": {
+                "description": "Tag to describe the enviroment"
+            }
+        },
+        "oi_tag":
+        {
+            "value":"600085214",
+            "metadata": {
+                "description": "Tag for budget classification"
+            }
+        }
+    }
+}

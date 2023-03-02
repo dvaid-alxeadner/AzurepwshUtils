@@ -1,0 +1,80 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "subscriptionId": {
+            "type": "string"
+        },
+        "resourceGroup":{
+            "type": "string"
+        },
+        "location": {
+            "type": "string"
+        },
+        "appconfname": {
+            "type": "string"
+        },
+        "privateEndpointName": {
+            "type": "string"
+        },
+        "targetSubResource": {
+            "type": "array"
+        },
+        "subnet": {
+            "type": "string"
+        },
+        "environment_tag": {
+            "type": "string"
+        },
+        "oi_tag":
+        {
+            "type": "string"
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.AppConfiguration/configurationStores",
+            "apiVersion": "2022-05-01",
+            "name": "[parameters('appconfname')]",
+            "location": "[parameters('location')]",
+            "dependsOn": [],
+            "tags": {
+                "AMBIENTE": "[parameters('environment_tag')]",
+                "OI": "[parameters('oi_tag')]"
+            },          
+            "sku": {
+                "name": "standard"
+            },
+            "properties": {
+                "softDeleteRetentionInDays": 7,
+                "enablePurgeProtection": true,
+                "disableLocalAuth": true,
+                "publicNetworkAccess": "Disabled"
+            }
+        },
+        {
+            "location": "[parameters('location')]",
+            "name": "[parameters('privateEndpointName')]",
+            "type": "Microsoft.Network/privateEndpoints",
+            "apiVersion": "2021-05-01",
+            "properties": {
+                "subnet": {
+                    "id": "[parameters('subnet')]"
+                },
+                "customNetworkInterfaceName":  "[concat(parameters('privateEndpointName'),'-nic')]",
+                "privateLinkServiceConnections": [
+                    {
+                        "name": "[parameters('privateEndpointName')]",
+                        "properties": {
+                            "privateLinkServiceId": "[concat('/subscriptions/',parameters('subscriptionId'),'/resourcegroups/',parameters('resourceGroup'),'/providers/Microsoft.AppConfiguration/configurationStores/',parameters('appconfname'))]",
+                            "groupIds": "[parameters('targetSubResource')]"
+                        }
+                    }
+                ]
+            },
+            "tags": {},
+            "dependsOn": ["[concat('Microsoft.AppConfiguration/configurationStores/', parameters('appconfname'))]"]
+        }
+    ],
+    "outputs": {}
+}
