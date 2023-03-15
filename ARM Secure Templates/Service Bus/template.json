@@ -1,0 +1,99 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "subscriptionId": {
+            "type": "string"
+        },
+        "resourceGroup": {
+            "type": "string"
+        },
+        "location": {
+            "type": "string"
+        },
+        "servicebusname": {
+            "type": "String"
+        },
+        "privateEndpointName": {
+            "type": "string"
+        },
+        "targetSubResource": {
+            "type": "array"
+        },
+        "subnet": {
+            "type": "string"
+        },
+        "environment_tag":
+        {
+            "type": "string"
+        },
+        "oi_tag":
+        {
+            "type": "string"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.ServiceBus/namespaces",
+            "apiVersion": "2022-10-01-preview",
+            "name": "[parameters('servicebusname')]",
+            "location": "[parameters('location')]",
+            "tags": {
+                "AMBIENTE": "[parameters('environment_tag')]",
+                "OI": "[parameters('oi_tag')]"
+            },
+            "sku": {
+                "name": "Premium",
+                "tier": "Premium",
+                "capacity": 1
+            },
+            "properties": {
+                "premiumMessagingPartitions": 1,
+                "minimumTlsVersion": "1.2",
+                "publicNetworkAccess": "Disabled",
+                "disableLocalAuth": true,
+                "zoneRedundant": false
+            }
+        },
+        {
+            "type": "Microsoft.ServiceBus/namespaces/authorizationrules",
+            "apiVersion": "2022-10-01-preview",
+            "name": "[concat(parameters('servicebusname'), '/RootManageSharedAccessKey')]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ServiceBus/namespaces', parameters('servicebusname'))]"
+            ],
+            "properties": {
+                "rights": [
+                    "Listen",
+                    "Manage",
+                    "Send"
+                ]
+            }
+        },
+        {
+        "location": "[parameters('location')]",
+        "name": "[parameters('privateEndpointName')]",
+        "type": "Microsoft.Network/privateEndpoints",
+        "apiVersion": "2021-05-01",
+        "properties": {
+            "subnet": {
+                "id": "[parameters('subnet')]"
+            },
+            "customNetworkInterfaceName":  "[concat(parameters('privateEndpointName'),'-nic')]",
+            "privateLinkServiceConnections": [
+                {
+                    "name": "[parameters('privateEndpointName')]",
+                    "properties": {
+                        "privateLinkServiceId": "[concat('/subscriptions/',parameters('subscriptionId'),'/resourcegroups/',parameters('resourceGroup'),'/providers/Microsoft.ServiceBus/namespaces/',parameters('servicebusname'))]",
+                        "groupIds": "[parameters('targetSubResource')]"
+                    }
+                }
+            ]
+        },
+        "tags": {},
+        "dependsOn": ["[concat('Microsoft.ServiceBus/namespaces/', parameters('servicebusname'))]"]
+    }
+    ]
+}
