@@ -60,14 +60,14 @@
         },
         "environment_tag":
         {
-            "value":"PRUEBAS",
+            "value":"TEST",
             "metadata": {
                 "description": "Tag to describe the enviroment"
             }
         },
         "oi_tag":
         {
-            "value":"600085214",
+            "value":"10000111",
             "metadata": {
                 "description": "Tag for budget classification"
             }
