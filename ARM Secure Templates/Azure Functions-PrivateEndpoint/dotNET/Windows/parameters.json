@@ -2,22 +2,10 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "subscriptionId": {
-            "value": "<aabbccdd-ffff-aabb-ccdd-aabbccddeeff>",
-            "metadata": {
-                "description": "id of the Azure Subscription"
-            }
-        },
         "name": {
-            "value": "azfuncdotnet20230119",
+            "value": "azfuncdotnet20230828",
             "metadata": {
                 "description": "Function name."
-            }
-        },
-        "location": {
-            "value": "East US 2",
-            "metadata": {
-                "description": "Location of the Azure Function."
             }
         },
         "hostingPlanName": {
@@ -72,14 +60,14 @@
         },
         "environment_tag":
         {
-            "value":"TEST",
+            "value":"PRUEBAS",
             "metadata": {
                 "description": "Tag to describe the enviroment"
             }
         },
         "oi_tag":
         {
-            "value":"10000111",
+            "value":"600085214",
             "metadata": {
                 "description": "Tag for budget classification"
             }
