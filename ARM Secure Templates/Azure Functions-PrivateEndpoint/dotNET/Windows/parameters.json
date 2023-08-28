@@ -17,7 +17,7 @@
         "serverFarmResourceGroup": {
             "value": "<Resource Group>",
             "metadata": {
-                "description": "Resource group name."
+                "description": "Resource group name where the app service plan resides."
             }
         },
         "alwaysOn": {
