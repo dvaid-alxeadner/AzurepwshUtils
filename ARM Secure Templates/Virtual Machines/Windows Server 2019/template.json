@@ -1,0 +1,207 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "adminUsername": {
+            "type": "String"
+        },
+        "adminPassword": {
+            "type": "Securestring"
+        },
+        "virtualNetworkId": {
+            "type": "String"
+        },
+        "subnetName": {
+            "type": "String"
+        },
+        "virtualMachineName":{
+            "type": "String"
+        },
+        "imageSku":
+        {
+            "type": "String"
+        },
+        "virtualMachineSize":
+        {
+            "type": "String"
+        },
+        "storageAccountType":
+        {
+            "type": "String"
+        },
+        "environment_tag":
+        {
+            "type": "String"
+        },
+        "oi_tag":
+        {
+            "type":"String"
+        }
+    },
+    "variables": {
+        "vnetId": "[parameters('virtualNetworkId')]",
+        "vnetName": "[last(split(variables('vnetId'), '/'))]",
+        "subnetRef": "[concat(variables('vnetId'), '/subnets/', parameters('subnetName'))]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2022-09-01",
+            "name": "[concat('nic-',parameters('virtualMachineName'))]",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "AMBIENTE": "[parameters('environment_tag')]",
+                "OI": "[parameters('oi_tag')]"
+            },
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                                "subnet": {
+                                    "id": "[variables('subnetRef')]"
+                                },
+                                "privateIPAllocationMethod": "Dynamic"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2022-03-01",
+            "name": "[parameters('virtualMachineName')]",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "AMBIENTE": "[parameters('environment_tag')]",
+                "OI": "[parameters('oi_tag')]"
+            },
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "dependsOn": [
+                "[concat('Microsoft.Network/networkInterfaces/','nic-',parameters('virtualMachineName'))]"
+            ],
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[parameters('virtualMachineSize')]"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "MicrosoftWindowsServer",
+                        "offer": "WindowsServer",
+                        "sku": "[parameters('imageSku')]",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "createOption": "FromImage",
+                        "caching": "ReadWrite",
+                        "managedDisk": {
+                            "storageAccountType": "[parameters('storageAccountType')]"
+                        },
+                        "deleteOption": "Delete"
+                    }
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', concat('nic-',parameters('virtualMachineName')))]",
+                            "properties": {
+                                "deleteOption": "Delete"
+                            }
+                        }
+                    ]
+                },
+                "securityProfile": {
+                    "encryptionAtHost": true,
+                    "securityType": "TrustedLaunch",
+                    "uefiSettings": {
+                        "secureBootEnabled": true,
+                        "vTpmEnabled": true
+                    }
+                },
+                "osProfile": {
+                    "computerName": "[parameters('virtualMachineName')]",
+                    "adminUsername": "[parameters('adminUsername')]",
+                    "adminPassword": "[parameters('adminPassword')]",
+                    "allowExtensionOperations": true,
+                    "windowsConfiguration": {
+                        "enableAutomaticUpdates": true,
+                        "provisionVmAgent": true,
+                        "patchSettings": {
+                            "enableHotpatching": false,
+                            "patchMode": "AutomaticByPlatform",
+                            "automaticByPlatformSettings": {
+                                "rebootSetting": "Never"
+                            }
+                        }
+                    }
+                },
+                "diagnosticsProfile": {
+                    "bootDiagnostics": {
+                        "enabled": true
+                    }
+                }
+            },
+            "resources": [
+                {
+                    "type": "extensions",
+                    "apiVersion": "2022-11-01",
+                    "name": "GuestAttestationExtension",
+                    "location": "[resourceGroup().location]",
+                    "tags": {
+                        "AMBIENTE": "[parameters('environment_tag')]",
+                        "OI": "[parameters('oi_tag')]"
+                    },
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Compute/virtualMachines', parameters('virtualMachineName'))]"
+                    ],
+                    "properties": {
+                        "publisher": "Microsoft.Azure.Security.WindowsAttestation",
+                        "type": "GuestAttestation",
+                        "typeHandlerVersion": "1.0",
+                        "autoUpgradeMinorVersion": true
+                    }
+                },
+                {
+                    "type": "extensions",
+                    "apiVersion": "2022-11-01",
+                    "name": "ChangeTrackingExtension",
+                    "location": "[resourceGroup().location]",
+                    "tags": {
+                        "AMBIENTE": "[parameters('environment_tag')]",
+                        "OI": "[parameters('oi_tag')]"
+                    },
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Compute/virtualMachines', parameters('virtualMachineName'))]"
+                    ],
+                    "properties": {
+                        "publisher": "Microsoft.Azure.ChangeTrackingAndInventory",
+                        "type": "ChangeTracking-Windows",
+                        "typeHandlerVersion": "2.0",
+                        "autoUpgradeMinorVersion": true
+                    }
+                },
+                {
+                    "type": "extensions",
+					"apiVersion": "2022-11-01",
+            		"name": "AADLoginForWindows",
+					"location": "[resourceGroup().location]",
+                    "tags": {
+                        "AMBIENTE": "[parameters('environment_tag')]",
+                        "OI": "[parameters('oi_tag')]"
+                    },
+					"dependsOn": [
+                        "[resourceId('Microsoft.Compute/virtualMachines', parameters('virtualMachineName'))]"
+                    ],
+					"properties": {
+                		"publisher": "Microsoft.Azure.ActiveDirectory",
+                		"type": "AADLoginForWindows",
+                		"typeHandlerVersion": "1.0",
+                		"autoUpgradeMinorVersion": true
+					}
+            	}
+            ]
+        }
+    ]
+}
