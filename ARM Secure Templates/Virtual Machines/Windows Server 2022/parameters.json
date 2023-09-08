@@ -27,10 +27,10 @@
             }
         },
         "virtualMachineName":{
-		"value": "virtualMachine20230908",
-            "metadata": {
-                "description": "Name of the virtual machine"
-            }
+		"value": "VM-W22-20230908",
+            	"metadata": {
+                	"description": "Name of the virtual machine"
+            	}
         },
         "imageSku":
         {
