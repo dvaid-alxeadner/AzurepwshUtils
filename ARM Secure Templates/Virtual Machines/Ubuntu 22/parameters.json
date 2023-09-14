@@ -1,0 +1,77 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "adminUsername": {
+            "value": null,
+            "metadata": {
+                "description": "Admin User name"
+            }
+        },
+        "adminPassword": {
+            "value": null,
+            "metadata": {
+                "description": "Admin Password"
+            }
+        },
+        "virtualNetworkId": {
+            "value": "/subscriptions/<SubscriptionID>/resourceGroups/<ResourceGroupName>/providers/Microsoft.Network/virtualNetworks/<VNETName>",
+		"metadata": {
+                "description": "id of the Vnet"
+            }
+        },
+        "subnetName": {
+            "value": "SUBNET_NAME",
+            "metadata": {
+                "description": "Name of the subnet where the network interface will exist"
+            }
+        },
+        "virtualMachineName":{
+		"value": "VM-U22-20230914"
+            "metadata": {
+                "description": "Name of the virtual machine"
+            }
+        },
+        "offer":{
+            "value": "0001-com-ubuntu-server-jammy",
+            "metadata": {
+                "description": "Offer for the OS image"
+            }
+        },
+        "imageSku":
+        {
+            "value": "22_04-lts-gen2",
+            "metadata": {
+                "description": "SKU for the OS image"
+            }
+        },
+        "virtualMachineSize":
+        {
+            "value": "Standard_B2s",
+            "metadata": {
+                "description": "Size of the VM"
+            }
+        },
+        "storageAccountType":
+        {
+            "value": "StandardSSD_LRS",
+            "metadata": {
+                "description": "Type of storage for VM disks."
+            }
+        },
+        "environment_tag":
+        {
+            "value":"TEST",
+            "metadata": {
+                "description": "Tag to describe the enviroment"
+            }
+        },
+        "oi_tag":
+        {
+            "value":"10000111",
+            "metadata": {
+                "description": "Tag for budget classification"
+            }
+        }
+    }
+}
