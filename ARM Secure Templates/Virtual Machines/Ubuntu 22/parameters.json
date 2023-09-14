@@ -27,7 +27,7 @@
             }
         },
         "virtualMachineName":{
-		"value": "VM-U22-20230914"
+		"value": "VM-U22-20230914",
             "metadata": {
                 "description": "Name of the virtual machine"
             }
