@@ -2,26 +2,14 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "subscriptionId": {
-            "value": "<aabbccdd-ffff-aabb-ccdd-aabbccddeeff>",
-            "metadata": {
-                "description": "id of the Azure Subscription"
-            }
-        },
         "name": {
-            "value": "azfuncdotnet20230119",
+            "value": "azfunc20230920",
             "metadata": {
                 "description": "Function name."
             }
         },
-        "location": {
-            "value": "East US 2",
-            "metadata": {
-                "description": "Location of the Azure Function."
-            }
-        },
         "hostingPlanName": {
-            "value": "appserviceplan20230119",
+            "value": "appserviceplan20221222",
             "metadata": {
                 "description": "Service Plan name."
             }
@@ -54,7 +42,7 @@
             }
         },
         "privateEndpointName": {
-            "value": "PE_AZFUNCTIONDOTNET",
+            "value": "PE_AZFUNCTIONDOTNETLINUX",
             "metadata": {
                 "description": "Private endpoint name."
             }
