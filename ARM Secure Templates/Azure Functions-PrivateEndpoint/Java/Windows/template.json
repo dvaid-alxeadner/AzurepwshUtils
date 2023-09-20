@@ -2,13 +2,7 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "subscriptionId": {
-            "type": "string"
-        },
         "name": {
-            "type": "string"
-        },
-        "location": {
             "type": "string"
         },
         "hostingPlanName": {
@@ -57,9 +51,9 @@
             "identity": {
                 "type": "SystemAssigned"
                 },
-            "location": "[parameters('location')]",
+            "location": "[resourceGroup().location]",
             "tags": {
-                "hidden-link: /app-insights-resource-id": "[concat('/subscriptions/',parameters('subscriptionId'),'/resourceGroups/',parameters('serverFarmResourceGroup'),'/providers/Microsoft.Insights/components/',parameters('name'))]",
+                "hidden-link: /app-insights-resource-id": "[concat('/subscriptions/',subscription().subscriptionId,'/resourceGroups/',parameters('serverFarmResourceGroup'),'/providers/Microsoft.Insights/components/',parameters('name'))]",
                 "AMBIENTE": "[parameters('environment_tag')]",
                 "OI": "[parameters('oi_tag')]"
             },
@@ -88,7 +82,7 @@
                         },
                         {
                             "name": "AzureWebJobsStorage",
-                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('storageAccountName'),';AccountKey=',listKeys(resourceId(parameters('subscriptionId'),parameters('serverFarmResourceGroup'),'Microsoft.Storage/storageAccounts', parameters('storageAccountName')), '2019-06-01').keys[0].value,';EndpointSuffix=','core.windows.net')]"
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('storageAccountName'),';AccountKey=',listKeys(resourceId(subscription().subscriptionId,parameters('serverFarmResourceGroup'),'Microsoft.Storage/storageAccounts', parameters('storageAccountName')), '2019-06-01').keys[0].value,';EndpointSuffix=','core.windows.net')]"
                         }
                     ],
                     "cors": {
@@ -103,7 +97,7 @@
                     "ftpsState": "Disabled",
                     "http20Enabled": true
                 },
-                "serverFarmId": "[concat('/subscriptions/', parameters('subscriptionId'),'/resourcegroups/', parameters('serverFarmResourceGroup'), '/providers/Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]",
+                "serverFarmId": "[concat('/subscriptions/',subscription().subscriptionId,'/resourcegroups/', parameters('serverFarmResourceGroup'), '/providers/Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]",
                 "clientAffinityEnabled": false,
                 "virtualNetworkSubnetId": null,
                 "httpsOnly": true,
@@ -111,7 +105,7 @@
             }
         },
         {
-            "location": "[parameters('location')]",
+            "location": "[resourceGroup().location]",
             "name": "[parameters('privateEndpointName')]",
             "type": "Microsoft.Network/privateEndpoints",
             "apiVersion": "2021-05-01",
@@ -124,7 +118,7 @@
                     {
                         "name": "[parameters('privateEndpointName')]",
                         "properties": {
-                            "privateLinkServiceId": "[concat('/subscriptions/',parameters('subscriptionId'),'/resourcegroups/',parameters('serverFarmResourceGroup'),'/providers/Microsoft.Web/sites/',parameters('name'))]",
+                            "privateLinkServiceId": "[concat('/subscriptions/',subscription().subscriptionId,'/resourcegroups/',parameters('serverFarmResourceGroup'),'/providers/Microsoft.Web/sites/',parameters('name'))]",
                             "groupIds": "[parameters('targetSubResource')]"
                         }
                     }
@@ -140,7 +134,7 @@
             "apiVersion": "2020-02-02-preview",
             "name": "[parameters('name')]",
             "type": "microsoft.insights/components",
-            "location": "eastus2",
+            "location": "[resourceGroup().location]",
             "tags": {
                 "AMBIENTE": "[parameters('environment_tag')]",
                 "OI": "[parameters('oi_tag')]"
