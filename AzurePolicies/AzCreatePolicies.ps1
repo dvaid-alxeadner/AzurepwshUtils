@@ -358,12 +358,13 @@ try {
         $Description = "Para cumplir la linea base de seguridad de Azure todos los key vault deben tener habilitado soft delete"
         ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/1e66c121-a66a-4b1f-9b83-0fd99bf0fc2d" $Description $policyName $scope $displayName "Y" "Deny"
         
-        # Key Vault should use a virtual network service endpoint
-        # Effect Audit
-        $policyName = "audit-vnetsendpoint-kv"
-        $displayName = "26) Key Vault should use a virtual network service endpoint"
-        $Description = "Para cumplir la linea base de seguridad de Azure todos los key vault deben usar un endpoint a traves de VNET"
-        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/ea4d6841-2173-4317-9747-ff522a45120f" $Description $policyName $scope $displayName "Y" "Audit"
+        # Resource logs in Key Vault should be enabled 
+        # Effect AuditIfNotExists
+        $policyName = "audit-reslogs-kv"
+        $displayName = "26) Resource logs in Key Vault should be enabled"
+        $Description = "Para cumplir la linea base de seguridad de Azure los key vault deben retener los logs del recurso por un periodo de tiempo superior a 90 dias."
+        $requireRetentionDays = "90"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/cf820ca0-f99e-4f3e-84fb-66e913812d21" $Description $policyName $scope $displayName "Y" "AuditIfNotExists" $requireRetentionDays "requiredRetentionDays"
 
         # Azure Defender for Key Vault should be enabled
         # Effect AuditIfNotExists
@@ -1201,15 +1202,14 @@ try {
         $displayName = "145) Azure Monitor Private Link Scope should block access to non private link resources"
         $Description = "Para cumplir la linea base de seguridad de Azure los servicios de Azure Monitor deben deshabilitar el acceso público."
         ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/a499fed8-bcc8-4195-b154-641f14743757" $Description $policyName $scope $displayName "Y" "Audit"
-
-        # Resource logs in Key Vault should be enabled
-        # Effect AuditIfNotExists
-        $policyName = "audit-reslogs-kv"
-        $displayName = "146) Resource logs in Key Vault should be enabled"
-        $Description = "Para cumplir la linea base de seguridad de Azure los key vault deben retener los logs del recurso por un periodo de tiempo superior a 90 dias."
-        $requireRetentionDays = "90"
-        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/cf820ca0-f99e-4f3e-84fb-66e913812d21" $Description $policyName $scope $displayName "Y" "AuditIfNotExists" $requireRetentionDays "requiredRetentionDays"
-
+        
+        # Enable Rate Limit rule to protect against DDoS attacks on Azure Front Door WAF
+        # Effect Deny
+        $policyName = "deny-waflimit-frontdoor"
+        $displayName = "146) Enable Rate Limit rule to protect against DDoS attacks on Azure Front Door WAF"
+        $Description = "Para cumplir la linea base de seguridad de Azure los Front Door deben tener la habilitada la caracteristica de Rate Limit para evitar ataques DDoS."
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/e52e8487-4a97-48ac-b3e6-1c3cef45d298" $Description $policyName $scope $displayName "Y" "Deny"
+        
         # Azure Web Application Firewall should be enabled for Azure Front Door entry-points
         # Effect DENY
         $policyName = "deny-waf-frontdoor"
