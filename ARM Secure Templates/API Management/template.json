@@ -1,0 +1,184 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "name": {
+            "type": "string"
+        },
+        "sku": {
+            "type": "string"
+        },
+        "skucapacity": {
+            "type": "int"
+        },
+        "adminmail": {
+            "type": "string"
+        },
+        "company": {
+            "type": "string"
+        },
+        "disableGtwy": {
+            "type": "bool"
+        },
+        "developPortal": {
+            "type": "string"
+        },
+        "environment_tag":
+        {
+            "type": "string"
+        },
+        "oi_tag":
+        {
+            "type": "string"
+        }
+
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.ApiManagement/service",
+            "apiVersion": "2023-03-01-preview",
+            "name": "[parameters('name')]",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "AMBIENTE": "[parameters('environment_tag')]",
+                "OI": "[parameters('oi_tag')]"
+            },
+            "sku": {
+                "name": "[parameters('sku')]",
+                "capacity": "[parameters('skucapacity')]"
+            },
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "properties": {
+                "publisherEmail": "[parameters('adminmail')]",
+                "publisherName": "[parameters('company')]",
+                "notificationSenderEmail": "apimgmt-noreply@mail.windowsazure.com",
+                "hostnameConfigurations": [
+                    {
+                        "type": "Proxy",
+                        "hostName": "[concat(parameters('name'), '.azure-api.net')]",
+                        "negotiateClientCertificate": false,
+                        "defaultSslBinding": true,
+                        "certificateSource": "BuiltIn"
+                    }
+                ],
+                "customProperties": {
+                    "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Protocols.Tls11": "False",
+                    "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Protocols.Ssl30": "False",
+                    "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Protocols.Tls10": "False",
+                    "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Backend.Protocols.Tls11": "False",
+                    "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Backend.Protocols.Ssl30": "False",
+                    "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Backend.Protocols.Tls10": "False",
+                    "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Ciphers.TripleDes168": "Disabled",
+                    "Microsoft.WindowsAzure.ApiManagement.Gateway.Protocols.Server.Http2": "true"
+                },
+                "virtualNetworkType": "None",
+                "disableGateway": "[parameters('disableGtwy')]",
+                "natGatewayState": "Disabled",
+                "disableLocalAuth": true,
+                "apiVersionConstraint": {
+                    "minApiVersion": "2021-08-01"
+                },
+                "publicNetworkAccess": "Enabled",
+                "legacyPortalStatus": "Disabled",
+                "developerPortalStatus": "[parameters('developPortal')]"
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/groups",
+            "apiVersion": "2023-03-01-preview",
+            "name": "[concat(parameters('name'), '/administrators')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', parameters('name'))]"
+            ],
+            "properties": {
+                "displayName": "Administrators",
+                "description": "Administrators is a built-in group containing the admin email account provided at the time of service creation. Its membership is managed by the system.",
+                "type": "system"
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/groups",
+            "apiVersion": "2023-03-01-preview",
+            "name": "[concat(parameters('name'), '/developers')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', parameters('name'))]"
+            ],
+            "properties": {
+                "displayName": "Developers",
+                "description": "Developers is a built-in group. Its membership is managed by the system. Signed-in users fall into this group.",
+                "type": "system"
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/groups",
+            "apiVersion": "2023-03-01-preview",
+            "name": "[concat(parameters('name'), '/guests')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', parameters('name'))]"
+            ],
+            "properties": {
+                "displayName": "Guests",
+                "description": "Guests is a built-in group. Its membership is managed by the system. Unauthenticated users visiting the developer portal fall into this group.",
+                "type": "system"
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/policies",
+            "apiVersion": "2023-03-01-preview",
+            "name": "[concat(parameters('name'), '/policy')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', parameters('name'))]"
+            ],
+            "properties": {
+                "value": "<!--\r\n    IMPORTANT:\r\n    - Policy elements can appear only within the <inbound>, <outbound>, <backend> section elements.\r\n    - Only the <forward-request> policy element can appear within the <backend> section element.\r\n    - To apply a policy to the incoming request (before it is forwarded to the backend service), place a corresponding policy element within the <inbound> section element.\r\n    - To apply a policy to the outgoing response (before it is sent back to the caller), place a corresponding policy element within the <outbound> section element.\r\n    - To add a policy position the cursor at the desired insertion point and click on the round button associated with the policy.\r\n    - To remove a policy, delete the corresponding policy statement from the policy document.\r\n    - Policies are applied in the order of their appearance, from the top down.\r\n-->\r\n<policies>\r\n  <inbound />\r\n  <backend>\r\n    <forward-request />\r\n  </backend>\r\n  <outbound />\r\n</policies>",
+                "format": "xml"
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/products",
+            "apiVersion": "2023-03-01-preview",
+            "name": "[concat(parameters('name'), '/unlimited')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', parameters('name'))]"
+            ],
+            "properties": {
+                "displayName": "Unlimited",
+                "description": "Subscribers have completely unlimited access to the API. Administrator approval is required.",
+                "subscriptionRequired": true,
+                "approvalRequired": true,
+                "subscriptionsLimit": 1,
+                "state": "published"
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/products/groups",
+            "apiVersion": "2023-03-01-preview",
+            "name": "[concat(parameters('name'), '/unlimited/administrators')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/products', parameters('name'), 'unlimited')]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/products/groups",
+            "apiVersion": "2023-03-01-preview",
+            "name": "[concat(parameters('name'), '/unlimited/developers')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/products', parameters('name'), 'unlimited')]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/products/groups",
+            "apiVersion": "2023-03-01-preview",
+            "name": "[concat(parameters('name'), '/unlimited/guests')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/products', parameters('name'), 'unlimited')]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('name'))]"
+            ]
+        }
+    ]
+}

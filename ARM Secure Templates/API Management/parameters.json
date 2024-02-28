@@ -1,0 +1,62 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "name": {
+            "value": "apimanagementservice202402",
+            "metadata": {
+                "description": "API Management name."
+            }
+        },
+        "sku": {
+            "value": "Developer",
+            "metadata": {
+                "description": "Stock Keeping Unit (Developer/Premium)."
+            }
+        },
+        "skucapacity": {
+            "value": 1,
+            "metadata": {
+                "description": "Capacity service units."
+            }
+        },
+        "adminmail": {
+            "value": "user@domain.com",
+            "metadata": {
+                "description": "Mail address for the API Management administrator (Microsoft Entra ID account)"
+            }
+        },
+        "company": {
+            "value": "Contoso",
+            "metadata": {
+                "description": "Company name"
+            }
+        },
+        "disableGtwy": {
+            "value": false,
+            "metadata": {
+                "description": "Whether or not the API Management gateway is enabled or disabled"
+            }
+        },
+        "developPortal": {
+            "value": "Disabled",
+            "metadata": {
+                "description": "Enabling or disabling the API Management developer portal"
+            }
+        },
+        "environment_tag":
+        {
+            "value":"TEST",
+            "metadata": {
+                "description": "Tag to describe the enviroment"
+            }
+        },
+        "oi_tag":
+        {
+            "value":"10000111",
+            "metadata": {
+                "description": "Tag for budget classification"
+            }
+        }
+    }
+}
