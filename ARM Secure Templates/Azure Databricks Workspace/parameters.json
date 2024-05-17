@@ -28,7 +28,7 @@
         },
         "environment_tag":
         {
-            "value":"TEST,
+            "value":"TEST",
             "metadata": {
                 "description": "Tag to describe the enviroment"
             }
