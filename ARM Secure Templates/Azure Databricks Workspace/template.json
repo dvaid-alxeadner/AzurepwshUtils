@@ -1,0 +1,79 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "workspace_name": {
+            "type": "string"
+        },
+        "virtualNetworks_externalid": {
+            "type": "string"
+        },
+        "subnet_public_name":{
+            "type": "string"
+        },
+        "subnet_private_name":{
+            "type": "string"
+        },
+        "environment_tag":
+        {
+            "type": "string"
+        },
+        "oi_tag":
+        {
+            "type": "string"
+        },
+        "utcShortValue": {
+            "type": "string",
+            "defaultValue": "[utcNow('d')]"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Databricks/workspaces",
+            "apiVersion": "2022-04-01-preview",
+            "name": "[parameters('workspace_name')]",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "AMBIENTE": "[parameters('environment_tag')]",
+                "OI": "[parameters('oi_tag')]"
+            },
+            "sku": {
+                "name": "premium"
+            },
+            "properties": {
+                "publicNetworkAccess": "Disabled",
+                "requiredNsgRules": "NoAzureDatabricksRules",
+                "managedResourceGroupId": "[concat('/subscriptions/',subscription().subscriptionId,'/resourceGroups/databricks-rg-', parameters('workspace_name'), '-pwshdtbrck')]",
+                "parameters": {
+                    "customPrivateSubnetName": {
+                        "type": "String",
+                        "value": "[parameters('subnet_private_name')]"
+                    },
+                    "customPublicSubnetName": {
+                        "type": "String",
+                        "value": "[parameters('subnet_public_name')]"
+                    },
+                    "customVirtualNetworkId": {
+                        "type": "String",
+                        "value": "[parameters('virtualNetworks_externalid')]"
+                    },
+                    "enableNoPublicIp": {
+                        "type": "Bool",
+                        "value": true
+                    },
+                    "prepareEncryption": {
+                        "type": "Bool",
+                        "value": true
+                    },
+                    "requireInfrastructureEncryption": {
+                        "type": "Bool",
+                        "value": true
+                    }
+                },
+                "createdBy": {},
+                "createdDateTime": "[parameters('utcShortValue')]"
+            }
+        }
+    ]
+}
