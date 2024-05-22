@@ -132,10 +132,9 @@ try {
         # Connect To Azure (Interactive Login)
         $loginAZ=Connect-AzAccount -Tenant $TenantId
 
-        $mg = Get-AzManagementGroup -GroupName $scope
+        $mg = Get-AzManagementGroup -GroupName $scope -ErrorAction SilentlyContinue
         $scope = $mg.Id
         $SubscriptionId=$null
-
     }
     else 
     {
@@ -150,7 +149,8 @@ try {
                 { 
                     if ($scope)
                     {
-                        $ResourceGroup = Get-AzResourceGroup -Name $scope
+                        $ResourceGroup = Get-AzResourceGroup -Name $scope -ErrorAction SilentlyContinue
+                        
                         if ($ResourceGroup) 
                         {
                             $scope=$ResourceGroup.ResourceId
@@ -570,13 +570,13 @@ try {
         $Description = "Para cumplir la linea base de seguridad de Azure las bases de datos Azure SQL deben tener solucionadas las vulnerabilidades reportadas por el Defender For Azure SQL Databases."
         ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/feedbf84-6b99-488c-acc2-71c829aa5ffc" $Description $policyName $scope $displayName "Y"
 
-        # SQL servers with auditing to storage account destination should be configured with 90 days retention or higher
-        # Effect AuditIfNotExists
-        $policyName = "audit-90retenaudit-asql"
-        $displayName = "56) SQL servers with auditing to storage account destination should be configured with 90 days retention or higher"
-        $Description = "Para cumplir la linea base de seguridad de Azure las bases de datos Azure SQL deben tener mas de 90 dias de retencion en los logs de auditoria."
-        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/89099bee-89e0-4b26-a5f4-165451757743" $Description $policyName $scope $displayName "Y"
-
+        # Event Hub Namespaces should disable public network access 
+        # Effect DENY
+        $policyName = "deny-publicaccess-ehub"
+        $displayName = "56) Event Hub Namespaces should disable public network access"
+        $Description = "Para cumplir la linea base de seguridad de Azure Event Hub namespaces deben tener deshabilitado el acceso publico"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/0602787f-9896-402a-a6e1-39ee63ee435e" $Description $policyName $scope $displayName "Y" "Deny"
+        
         # All authorization rules except RootManageSharedAccessKey should be removed from Service Bus namespace
         # Effect DENY
         $policyName = "deny-authrules-sbus"
@@ -678,7 +678,6 @@ try {
  
         # Log Analytics workspaces should block log ingestion and querying from public networks AuditIFNotExists
         # Effect DENY
-        # New-AzOperationalInsightsWorkspace -Name "ISOC" -ResourceGroupName $rg -Location "East US 2" -PublicNetworkAccessForIngestion "Disabled" -PublicNetworkAccessForQuery "Disabled" -DisableLocalAuth $true -RetentionInDays 30 -Sku "pernode"
         $policyName = "deny-public-loganaw"
         $displayName = "71) Log Analytics workspaces should block log ingestion and querying from public networks"
         $Description = "Para cumplir la linea base de seguridad de Azure los servicios de log analytics deben bloquear las ingestas y consultas desde redes publicas."
@@ -1338,13 +1337,13 @@ try {
         $Description = "Para cumplir la linea base de seguridad de Azure los Azure Container Registry deben tener deshabilitados los export"
         ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/524b0254-c285-4903-bee6-bb8126cde579" $Description $policyName $scope $displayName "Y" "Deny"
 
-        # Container registries should not allow unrestricted network access
-        # Effect DENY
-        $policyName = "deny-nounrenet-acr"
-        $displayName = "165) Container registries should not allow unrestricted network access"
-        $Description = "Para cumplir la linea base de seguridad de Azure los Azure Container Registry no deben permitir el acceso a la red sin restricciones"
-        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/d0793b48-0edc-4296-a390-4c75d1bdfd71" $Description $policyName $scope $displayName "Y" "Deny"
-
+        # Azure MySQL flexible server should have Microsoft Entra Only Authentication enabled 
+        # EffectAuditIFNotExists
+        $policyName = "audit-entauth-mysqlflex"
+        $displayName = "165) Azure MySQL flexible server should have Microsoft Entra Only Authentication enabled"
+        $Description = "Para cumplir la linea base de seguridad de Azure los MySQL flexible servers deben implementar unicamente Autenticacion de Microsoft Entra ID"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/40e85574-ef33-47e8-a854-7a65c7500560" $Description $policyName $scope $displayName "Y"
+        
         # Container registries should have ARM audience token authentication disabled
         # Effect DENY
         $policyName = "deny-noarmaudtoken-acr"
@@ -1541,12 +1540,246 @@ try {
         $Description = "Para cumplir la linea base de seguridad de Azure todas las maquinas virtuales Linux solo deben utilizar componentes de inicio confiables y firmados"
         ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/bd876905-5b84-4f73-ab2d-2e7a7c4568d9" $Description $policyName $scope $displayName "Y" "Audit"
 
-        # Enable Rate Limit rule to protect against DDoS attacks on Azure Front Door WAF
+        # [Preview]: Azure Data Factory pipelines should only communicate with allowed domains
         # Effect DENY
-        $policyName = "deny-waflimit-frontdoor"
-        $displayName = "194) Enable Rate Limit rule to protect against DDoS attacks on Azure Front Door WAF"
-        $Description = "Para cumplir la linea base de seguridad de Azure los Front Door deben tener la habilitada la caracteristica de Rate Limit para evitar ataques DDoS."
-        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/e52e8487-4a97-48ac-b3e6-1c3cef45d298" $Description $policyName $scope $displayName "Y" "Deny"
+        $policyName = "disable-domainnames-dtfy"
+        $displayName = "194) [Preview]: Azure Data Factory pipelines should only communicate with allowed domains"
+        $Description = "Para cumplir la linea base de seguridad de Azure los Data Factory solo se pueden conectar a dominios previamente aprobados."
+        $allowedDomainNamesArray =@("xm.com.co")
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/3d02a511-74e5-4dab-a5fd-878704d4a61a" $Description $policyName $scope $displayName $null "Disabled" $allowedDomainNamesArray "allowedDomainNames"
+        
+        # Azure Kubernetes Service Private Clusters should be enabled 
+        # Effect DENY
+        $policyName = "deny-privclu-aks"
+        $displayName = "195) Azure Kubernetes Service Private Clusters should be enabled"
+        $Description = "Para cumplir la linea base de seguridad de Azure los AKS deben implementar los clusters en modo privado"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/040732e8-d947-40b8-95d6-854c95024bf8" $Description $policyName $scope $displayName "Y" "Audit"
+
+        # Azure Kubernetes Service Clusters should enable node os auto-upgrade
+        # Effect Audit
+        $policyName = "audit-autoupgrnode-aks"
+        $displayName = "196) Azure Kubernetes Service Clusters should enable node os auto-upgrade"
+        $Description = "Para cumplir la linea base de seguridad de Azure los clusters de AKS deben tener el auto-upgrade hablitado en el sistema operativo de los nodos"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/04408ca5-aa10-42ce-8536-98955cdddd4c" $Description $policyName $scope $displayName "Y" "Audit"
+
+        # Azure Policy Add-on for Kubernetes service (AKS) should be installed and enabled on your clusters 
+        # Effect Audit
+        $policyName = "audit-poladdon-aks"
+        $displayName = "197) Azure Policy Add-on for Kubernetes service (AKS) should be installed and enabled on your clusters"
+        $Description = "Para cumplir la linea base de seguridad de Azure los clusters AKS deben instalado el add-on de Azure Policy"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/0a15ec92-a229-4763-bb14-0ea34a568f8d" $Description $policyName $scope $displayName "Y" "Audit"
+
+        # Azure Kubernetes Service Clusters should disable Command Invoke
+        # Effect Audit
+        $policyName = "audit-dsblecommand-aks"
+        $displayName = "198) Disable Command Invoke on Azure Kubernetes Service"
+        $Description = "Para cumplir la linea base de seguridad de Azure los AKS deben tener deshabilitado el command invoke"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/89f2d532-c53c-4f8f-9afa-4927b1114a0d" $Description $policyName $scope $displayName "Y" "Audit"
+
+        # Azure Kubernetes Service Clusters should enable workload identity Audit
+        # Effect Audit
+        $policyName = "audit-wrkldident-aks"
+        $displayName = "199) Azure Kubernetes Service Clusters should enable workload identity"
+        $Description = "Para cumplir la linea base de seguridad de Azure los AKS deben tener habilitada la workload identity para el acceso seguro desde los pods"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/2cc2e023-0dac-4046-875b-178f683929d5" $Description $policyName $scope $displayName "Y" "Audit"
+        
+        # Temp disks and cache for agent node pools in Azure Kubernetes Service clusters should be encrypted at host 
+        # Effect DENY
+        $policyName = "deny-encrypthost-aks"
+        $displayName = "200) Temp disks and cache for agent node pools in Azure Kubernetes Service clusters should be encrypted at host"
+        $Description = "Para cumplir la linea base de seguridad de Azure los clusters de AKS deben implementar cifrado end to end usando encryption at host"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/41425d9f-d1a5-499a-9932-f8ed8453932c" $Description $policyName $scope $displayName "Y" "Audit"
+
+        # Azure Kubernetes Service Clusters should enable Azure Active Directory integration
+        # Effect Audit
+        $policyName = "audit-aadintegration-aks"
+        $displayName = "201) Azure Kubernetes Service Clusters should enable Azure Active Directory integration"
+        $Description = "Para cumplir la linea base de seguridad de Azure los clusters de AKS deben tener habilitada la integración con Azure Active Directory"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/450d2877-ebea-41e8-b00c-e286317d21bf" $Description $policyName $scope $displayName "Y" "Audit"
+
+        # Azure Kubernetes Service Clusters should have local authentication methods disabled 
+        # Effect DENY
+        $policyName = "deny-dlocalauth-aks"
+        $displayName = "202) Azure Kubernetes Service Clusters should have local authentication methods disabled"
+        $Description = "Para cumplir la linea base de seguridad de Azure los clusters de AKS deben tener habilitada la integración con Azure Active Directory"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/993c2fcd-2b29-49d2-9eb0-df2c3a730c32" $Description $policyName $scope $displayName "Y" "Audit"
+
+        # Azure Kubernetes Service Clusters should enable Image Cleaner
+        # Effect Audit
+        $policyName = "audit-imgcleaner-aks"
+        $displayName = "203) Azure Kubernetes Service Clusters should enable Image Cleaner"
+        $Description = "Para cumplir la linea base de seguridad de Azure los clusters de AKS deben tener habilitado el image cleaner que elimina de forma automatica imagenes vulnerables"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/af3c26b2-6fad-493e-9236-9c68928516ab" $Description $policyName $scope $displayName "Y" "Audit"
+
+        # Azure Kubernetes Clusters should enable Container Storage Interface(CSI)
+        # Effect Audit
+        $policyName = "audit-strgcsi-aks"
+        $displayName = "204) Azure Kubernetes Clusters should enable Container Storage Interface(CSI)"
+        $Description = "Para cumplir la linea base de seguridad de Azure los clusters de AKS deben tener habilitado CSI (Container Storage Interface)"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/c5110b6e-5272-4989-9935-59ad06fdf341" $Description $policyName $scope $displayName "Y" "Audit"
+
+        # Azure Kubernetes Service Clusters should use managed identities
+        # Effect Audit
+        $policyName = "audit-mngid-aks"
+        $displayName = "205) Azure Kubernetes Service Clusters should use managed identities"
+        $Description = "Para cumplir la linea base de seguridad de Azure los clusters de AKS deben usar una managed identity"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/da6e2401-19da-4532-9141-fb8fbde08431" $Description $policyName $scope $displayName "Y" "Audit"
+
+        # Kubernetes clusters should be accessible only over HTTPS 
+        # Effect DENY
+        $policyName = "deny-https-aks"
+        $displayName = "206) Kubernetes clusters should be accessible only over HTTPS"
+        $Description = "Para cumplir la linea base de seguridad de Azure los cluster de Azure Kubernetes solo se deben acceder sobre HTTPS"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/1a5b4dca-0b6f-4cf5-907c-56316bc1bf3d" $Description $policyName $scope $displayName $null "Audit"
+
+        # Kubernetes clusters should not allow container privilege escalation
+        # Effect DENY
+        $policyName = "deny-privescala-aks"
+        $displayName = "207) Kubernetes clusters should not allow container privilege escalation"
+        $Description = "Para cumplir la linea base de seguridad de Azure los cluster de Azure Kubernetes no deben permitir el escalamiento de privilegios."
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/1c6e92c9-99f0-4e55-9cf2-0c234dc48f99" $Description $policyName $scope $displayName $null "Audit"
+
+        # Kubernetes clusters should disable automounting API credentials
+        #Effect DENY
+        $policyName = "deny-automountapi-aks"
+        $displayName = "208) Kubernetes clusters should disable automounting API credentials"
+        $Description = "Para cumplir la linea base de seguridad de Azure los cluster de Azure Kubernetes deben tener deshabilitado em automontaje de las credenciales de API."
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/423dd1ba-798e-40e4-9c4d-b6902674b423" $Description $policyName $scope $displayName $null "Audit"
+
+        # Kubernetes cluster containers should not share host process ID or host IPC namespace
+        #Effect DENY
+        $policyName = "deny-hostIDIPC-aks"
+        $displayName = "209) Kubernetes cluster containers should not share host process ID or host IPC namespace"
+        $Description = "Para cumplir la linea base de seguridad de Azure los pods de los cluster de Azure Kubernetes no deben exponer los process ID de host o el namespace IPC del host."
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/47a1ee2f-2a2a-4576-bf2a-e0e36709c2b8" $Description $policyName $scope $displayName $null "Audit"
+
+        # Kubernetes cluster Windows containers should not run as ContainerAdministrator
+        #Effect DENY
+        $policyName = "deny-notrunadmin-aks"
+        $displayName = "210) Kubernetes cluster Windows containers should not run as ContainerAdministrator"
+        $Description = "Para cumplir la linea base de seguridad de Azure los cluster de Azure Kubernetes no deben ejecutarse como ContaiderAdministrator"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/5485eac0-7e8f-4964-998b-a44f4f0c1e75" $Description $policyName $scope $displayName $null "Audit"
+
+        # Kubernetes cluster pods should only use approved host network and port range
+        #Effect DENY
+        $policyName = "deny-approvednetport-aks"
+        $displayName = "211) Kubernetes cluster pods should only use approved host network and port range"
+        $Description = "Para cumplir la linea base de seguridad de Azure los pods de los cluster de Azure Kubernetes solo deben usar redes y puertos aprobados."
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/82985f06-dc18-4a48-bc1c-b9f4f0098cfe" $Description $policyName $scope $displayName $null "Audit"
+
+        # Kubernetes cluster should not allow privileged containers
+        # Effect DENY
+        $policyName = "deny-noprivcontainers-aks"
+        $displayName = "212) Kubernetes cluster should not allow privileged containers"
+        $Description = "Para cumplir la linea base de seguridad de Azure los cluster de Azure Kubernetes no deben usar contenedores privilegiados."
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/95edb821-ddaf-4404-9732-666045e056b4" $Description $policyName $scope $displayName $null "Audit"
+
+        # Kubernetes clusters should not use the default namespace
+        # EFfect DENY
+        $policyName = "deny-defnamespace-aks"
+        $displayName = "213) Kubernetes clusters should not use the default namespace"
+        $Description = "Para cumplir la linea base de seguridad de Azure los cluster de Azure Kubernetes no deben usar el namespace por omision"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/9f061a12-e40d-4183-a00e-171812443373" $Description $policyName $scope $displayName $null "Audit"
+
+        # Kubernetes clusters should not grant CAP_SYS_ADMIN security capabilities
+        # Effect DENY
+        $policyName = "deny-cpapsyadmin-aks"
+        $displayName = "214) Kubernetes clusters should not grant CAP_SYS_ADMIN security capabilities"
+        $Description = "Para cumplir la linea base de seguridad de Azure los cluster de Azure Kubernetes no deben ejecutarse bajo el contexto de seguridad CAP_SYS_ADMIN."
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/d2e7ea85-6b44-4317-a0be-1b951587f626" $Description $policyName $scope $displayName $null "Audit"
+
+        # Kubernetes cluster containers should run with a read only root file system
+        #Effect DENY
+        $policyName = "deny-norootexec-aks"
+        $displayName = "215) Kubernetes cluster containers should run with a read only root file system"
+        $Description = "Para cumplir la linea base de seguridad de Azure los cluster de Azure Kubernetes deben ejecutarse con un filesystem root de solo lectura."
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/df49d893-a74c-421d-bc95-c663042e5b80" $Description $policyName $scope $displayName $null "Audit"
+
+        # Kubernetes cluster containers should only use allowed ProcMountType
+        # Effect DENY
+        $policyName = "deny-procmountty-aks"
+        $displayName = "216) Kubernetes cluster containers should only use allowed ProcMountType"
+        $Description = "Para cumplir la linea base de seguridad de Azure los cluster de Azure Kubernetes solo deben permitir ProcMountType en los contenedores."
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/f85eb0dd-92ee-40e9-8a76-db25a507d6d3" $Description $policyName $scope $displayName $null "Audit"
+
+        # Kubernetes cluster containers should only use allowed images
+        # Effect DENY 
+        $policyName = "deny-allowimg-aks"
+        $allowedContainerImagesRegex = "^([^\/]+\.azurecr\.io|registry\.io)\/.+$"
+        $displayName = "217) Kubernetes cluster containers should only use allowed images"
+        $Description = "Para cumplir la linea base de seguridad de Azure los cluster de Azure Kubernetes solo deben permitir el uso de imagenes permitidas."
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/febd0533-8e55-448f-b837-bd0e06f16469" $Description $policyName $scope $displayName $null "Audit" $allowedContainerImagesRegex "allowedContainerImagesRegex"
+
+        # Azure Kubernetes Service Private Clusters should be enabled
+        # Effect DENY
+        $policyName = "deny-privcluster-aks"
+        $displayName = "218) Azure Kubernetes Service Private Clusters should be enabled"
+        $Description = "Para cumplir la linea base de seguridad de Azure los cluster de Azure Kubernetes deben ser privados."
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/040732e8-d947-40b8-95d6-854c95024bf8" $Description $policyName $scope $displayName "Y" "Audit"
+
+        # Authorized IP ranges should be defined on Kubernetes Services
+        # Effect Audit
+        $policyName = "audit-ipapiaccess-aks"
+        $displayName = "219) Authorized IP ranges should be defined on Kubernetes Services"
+        $Description = "Para cumplir la linea base de seguridad de Azure el API de Azure Kubernetes solo debe recibir peticiones desde direcciones IP autorizadas"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/0e246bcf-5f6f-4f87-bc6f-775d4712c7ea" $Description $policyName $scope $displayName "Y"
+
+        # [Preview]: Managed Identity Federated Credentials from Azure Kubernetes should be from trusted sources
+        # EFfect Audit
+        $policyName = "audit-federauth-aks"
+        $displayName = "220) [Preview]: Managed Identity Federated Credentials from Azure Kubernetes should be from trusted sources"
+        $Description = "Para cumplir la linea base de seguridad de Azure los Azure Kubernetes Services solo deben aceptar credenciales desde fuentes federadas de confianza"
+        $TenantArray =@($TenantId)
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/ae62c456-33de-4dc8-b100-7ce9028a7d99" $Description $policyName $scope $displayName "Y" "Audit" $TenantArray "allowedTenants"
+
+        # Kubernetes Services should be upgraded to a non-vulnerable Kubernetes version
+        # Effect Audit
+        $policyName = "audit-novuln-aks"
+        $displayName = "221) Kubernetes Services should be upgraded to a non-vulnerable Kubernetes version"
+        $Description = "Para cumplir la linea base de seguridad de Azure los servicios de Azure Kubernetes deben actualizarse a versiones no vulnerables."
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/fb893a29-21bb-418c-a157-e99480ec364c" $Description $policyName $scope $displayName "Y" "Audit"
+
+        # Azure Kubernetes Clusters should enable Key Management Service (KMS)
+        # Effect Audit
+        $policyName = "audit-kms-aks"
+        $displayName = "222) Azure Kubernetes Clusters should enable Key Management Service (KMS)"
+        $Description = "Para cumplir la linea base de seguridad de Azure los Azure Kubernetes  Services deben tener habilitado el servicio de administracion de llaves (KMS)"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/dbbdc317-9734-4dd8-9074-993b29c69008" $Description $policyName $scope $displayName "Y" "Audit"
+
+        # Azure API Management platform version should be stv2
+        #EFfect DENY
+        $policyName = "deny-stv2-apim"
+        $displayName = "223) Azure API Management platform version should be stv2"
+        $Description = "Para cumplir la linea base de seguridad de Azure los Azure API Management deben utilizar la version de plataforma stv2"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/1dc2fc00-2245-4143-99f4-874c937f13ef" $Description $policyName $scope $displayName "Y" "Deny"
+
+        # Microsoft Defender for APIs should be enabled
+        # Effect AuditIfNotExists
+        $policyName = "audit-azdf-apis"
+        $displayName = "224) Microsoft Defender for APIs should be enabled"
+        $Description = "Para cumplir la linea base de seguridad de Azure los Azure API Management deben utilizar Microsoft Defender For APIs"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/7926a6d1-b268-4586-8197-e8ae90c877d7" $Description $policyName $scope $displayName "Y" "AuditIfNotExists"
+
+        # API endpoints in Azure API Management should be authenticated
+        # Effect AuditIfNotExists
+        $policyName = "audit-authendpoint-apim"
+        $displayName = "225) API endpoints in Azure API Management should be authenticated"
+        $Description = "Para cumplir la linea base de seguridad de Azure los endpoints en los Azure API Management deben utilizar autenticacion"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/8ac833bd-f505-48d5-887e-c993a1d3eea0" $Description $policyName $scope $displayName "Y" "AuditIfNotExists"
+
+        # API Management should have username and password authentication disabled
+        # Effect Audit
+        $policyName = "audit-dlocalauth-apim"
+        $displayName = "226) API Management should have username and password authentication disabled"
+        $Description = "Para cumplir la linea base de seguridad de Azure los Azure API Managementd deben tener deshabilitada la autenticacion local y en su lugar se deben usar cuentas de Azure Active Directory"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/ffe25541-3853-4f4e-b71d-064422294b11" $Description $policyName $scope $displayName "Y" "Audit"
+
+        # Azure Container Instance container group should deploy into a virtual network
+        Effect DENY
+        $policyName = "deny-vnet-azcontainerinstance"
+        $displayName = "227) Azure Container Instance container group should deploy into a virtual network"
+        $Description = "Para cumplir la linea base de seguridad de Azure los Azure Container Instances se deben desplegar en una VNET"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/8af8f826-edcb-4178-b35f-851ea6fea615" $Description $policyName $scope $displayName "Y" "Deny"
     }
 }
 Catch
