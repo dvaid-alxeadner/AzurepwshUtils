@@ -157,7 +157,7 @@ try {
                         }
                         else 
                         {
-                            Write-Host "Invalid scope $scope"
+                            Write-Host "Invalid scope.  Resource group $scope not found in subscription $SubscriptionId"
                             exit 
                         }
                     }
