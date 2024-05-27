@@ -1640,7 +1640,7 @@ try {
         ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/1c6e92c9-99f0-4e55-9cf2-0c234dc48f99" $Description $policyName $scope $displayName $null "Audit"
 
         # Kubernetes clusters should disable automounting API credentials
-        #Effect DENY
+        # Effect DENY
         $policyName = "deny-automountapi-aks"
         $displayName = "208) Kubernetes clusters should disable automounting API credentials"
         $Description = "Para cumplir la linea base de seguridad de Azure los cluster de Azure Kubernetes deben tener deshabilitado em automontaje de las credenciales de API."
@@ -1654,7 +1654,7 @@ try {
         ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/47a1ee2f-2a2a-4576-bf2a-e0e36709c2b8" $Description $policyName $scope $displayName $null "Audit"
 
         # Kubernetes cluster Windows containers should not run as ContainerAdministrator
-        #Effect DENY
+        # Effect DENY
         $policyName = "deny-notrunadmin-aks"
         $displayName = "210) Kubernetes cluster Windows containers should not run as ContainerAdministrator"
         $Description = "Para cumplir la linea base de seguridad de Azure los cluster de Azure Kubernetes no deben ejecutarse como ContaiderAdministrator"
@@ -1747,7 +1747,7 @@ try {
         ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/dbbdc317-9734-4dd8-9074-993b29c69008" $Description $policyName $scope $displayName "Y" "Audit"
 
         # Azure API Management platform version should be stv2
-        #EFfect DENY
+        # EFfect DENY
         $policyName = "deny-stv2-apim"
         $displayName = "223) Azure API Management platform version should be stv2"
         $Description = "Para cumplir la linea base de seguridad de Azure los Azure API Management deben utilizar la version de plataforma stv2"
@@ -1775,11 +1775,32 @@ try {
         ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/ffe25541-3853-4f4e-b71d-064422294b11" $Description $policyName $scope $displayName "Y" "Audit"
 
         # Azure Container Instance container group should deploy into a virtual network
-        Effect DENY
+        # Effect DENY
         $policyName = "deny-vnet-azcontainerinstance"
         $displayName = "227) Azure Container Instance container group should deploy into a virtual network"
         $Description = "Para cumplir la linea base de seguridad de Azure los Azure Container Instances se deben desplegar en una VNET"
         ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/8af8f826-edcb-4178-b35f-851ea6fea615" $Description $policyName $scope $displayName "Y" "Deny"
+
+        # Azure Event Grid namespaces should disable public network access
+        # Effect DENY
+        $policyName = "deny-pubaccess-egridnam"
+        $displayName = "228) Azure Event Grid namespaces should disable public network access"
+        $Description = "Para cumplir la linea base de seguridad de Azure los Event Grid Namespaces deben deben tener deshabilitado el acceso publico"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/67dcad1a-ec60-45df-8fd0-14c9d29eeaa2" $Description $policyName $scope $displayName "Y" "Deny"
+     
+        # Azure Event Grid namespace topic broker should use private link
+        # Effect Audit
+        $policyName = "audit-privlink-egrdnamtopbro"
+        $displayName = "229) Azure Event Grid namespace topic broker should use private link"
+        $Description = "Para cumplir la linea base de seguridad de Azure los Event Grid Namespace Topic Broker deben estar conectados a una VNET"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/1301a000-bc6b-4d90-8414-7091e3abdc40" $Description $policyName $scope $displayName "Y" "Audit"
+        
+        # Azure Event Grid namespace MQTT broker should use private link
+        # Effect Audit
+        $policyName = "audit-privlink-egrdmqttbro"
+        $displayName = "230) Azure Event Grid namespace MQTT broker should use private link"
+        $Description = "Para cumplir la linea base de seguridad de Azure los Event Grid Namespace MQTT Broker deben estar conectados a una VNET"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/cd8f7644-6fe8-4516-bded-0e465ead03ac" $Description $policyName $scope $displayName "Y" "Audit"
     }
 }
 Catch
