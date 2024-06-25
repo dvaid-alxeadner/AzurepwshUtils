@@ -54,13 +54,14 @@ try {
             {
                 if($mg.Id)
                 {
-                    $pol=Get-AzPolicyState -ManagementGroupName $mg.Name -Filter "PolicyDefinitionName ne '0868462e-646c-4fe3-9ced-a733534b6a2c' AND PolicyDefinitionName ne '1c210e94-a481-4beb-95fa-1571b434fb04' 
-				    AND PolicyDefinitionName ne '053d3325-282c-4e5c-b944-24faffd30d77' AND PolicyDefinitionName ne 'a6cf7411-da9e-49e2-aec0-cba0250eaf8c'
-                            AND PolicyDefinitionName ne '11ac78e3-31bc-4f0c-8434-37ab963cea07' AND PolicyDefinitionName ne '32133ab0-ee4b-4b44-98d6-042180979d50' 
-                            AND PolicyDefinitionName ne 'cccc23c7-8427-4f53-ad12-b6a63eb452b3' AND PolicyDefinitionName ne 'e765b5de-1225-4ba3-bd56-1ac6695af988' 
-                            AND PolicyDefinitionName ne '96670d01-0a4d-4649-9c89-2d3abc0a5025' AND PolicyDefinitionName ne '5e0640c5-c4f2-4e14-9f61-5c80ba586b8d'
-                            AND PolicyDefinitionName ne 'e56962a6-4747-49cd-b67b-bf8b01975c4c' AND PolicySetDefinitionName ne '96670d01-0a4d-4649-9c89-2d3abc0a5025'
-                            AND PolicySetDefinitionName ne '1f3afdf9-d0c9-4c3d-847f-89da613e70a8' AND PolicySetDefinitionName ne '1a5bb27d-173f-493e-9568-eb56638dde4d'"
+                    $pol=Get-AzPolicyState -ManagementGroupName $mg.Name -Filter "PolicyDefinitionName ne '0868462e-646c-4fe3-9ced-a733534b6a2c' 
+		    	AND PolicyDefinitionName ne 'd6b2009e-9ca0-446a-acce-f34213f7b803' AND PolicyDefinitionName ne '1c210e94-a481-4beb-95fa-1571b434fb04' 
+       			AND PolicyDefinitionName ne '053d3325-282c-4e5c-b944-24faffd30d77' AND PolicyDefinitionName ne 'a6cf7411-da9e-49e2-aec0-cba0250eaf8c'
+	  		AND PolicyDefinitionName ne '11ac78e3-31bc-4f0c-8434-37ab963cea07' AND PolicyDefinitionName ne '32133ab0-ee4b-4b44-98d6-042180979d50' 
+                        AND PolicyDefinitionName ne 'cccc23c7-8427-4f53-ad12-b6a63eb452b3' AND PolicyDefinitionName ne 'e765b5de-1225-4ba3-bd56-1ac6695af988' 
+                        AND PolicyDefinitionName ne '96670d01-0a4d-4649-9c89-2d3abc0a5025' AND PolicyDefinitionName ne '5e0640c5-c4f2-4e14-9f61-5c80ba586b8d'
+                        AND PolicyDefinitionName ne 'e56962a6-4747-49cd-b67b-bf8b01975c4c' AND PolicySetDefinitionName ne '96670d01-0a4d-4649-9c89-2d3abc0a5025'
+                        AND PolicySetDefinitionName ne '1f3afdf9-d0c9-4c3d-847f-89da613e70a8' AND PolicySetDefinitionName ne '1a5bb27d-173f-493e-9568-eb56638dde4d'"
 
                     if ($pol) 
                     {
@@ -91,8 +92,8 @@ try {
                             $detail=Get-AzPolicyDefinition -Name $policyDefName -ErrorAction SilentlyContinue
                             $policyProperties=$detail.Properties
 
-                            $policyDescription=$policyProperties.Description
-                            $policyDisplayName=$policyProperties.DisplayName
+                            $policyDescription=$detail.Description
+                            $policyDisplayName=$detail.DisplayName
 
                             if ($policyResourceGroup) 
                             {
@@ -212,8 +213,9 @@ try {
                             $ResourceGroup = Get-AzResourceGroup -Name $scope -ErrorAction SilentlyContinue
                             if ($ResourceGroup) 
                             {
-                                $pol=Get-AzPolicyState -ResourceGroupName $scope -Filter "PolicyDefinitionName ne '0868462e-646c-4fe3-9ced-a733534b6a2c' AND PolicyDefinitionName ne '1c210e94-a481-4beb-95fa-1571b434fb04' 
-					  AND PolicyDefinitionName ne '053d3325-282c-4e5c-b944-24faffd30d77' AND PolicyDefinitionName ne 'a6cf7411-da9e-49e2-aec0-cba0250eaf8c'
+                                $pol=Get-AzPolicyState -ResourceGroupName $scope -Filter "PolicyDefinitionName ne '0868462e-646c-4fe3-9ced-a733534b6a2c' 
+				AND PolicyDefinitionName ne 'd6b2009e-9ca0-446a-acce-f34213f7b803' AND PolicyDefinitionName ne '1c210e94-a481-4beb-95fa-1571b434fb04' 
+				AND PolicyDefinitionName ne '053d3325-282c-4e5c-b944-24faffd30d77' AND PolicyDefinitionName ne 'a6cf7411-da9e-49e2-aec0-cba0250eaf8c'
                                 AND PolicyDefinitionName ne '11ac78e3-31bc-4f0c-8434-37ab963cea07' AND PolicyDefinitionName ne '32133ab0-ee4b-4b44-98d6-042180979d50' 
                                 AND PolicyDefinitionName ne 'cccc23c7-8427-4f53-ad12-b6a63eb452b3' AND PolicyDefinitionName ne 'e765b5de-1225-4ba3-bd56-1ac6695af988' 
                                 AND PolicyDefinitionName ne '96670d01-0a4d-4649-9c89-2d3abc0a5025' AND PolicyDefinitionName ne '5e0640c5-c4f2-4e14-9f61-5c80ba586b8d'
@@ -252,8 +254,8 @@ try {
                                 $detail=Get-AzPolicyDefinition -Name $policyDefName
                                 $policyProperties=$detail.Properties
 
-                                $policyDescription=$policyProperties.Description
-                                $policyDisplayName=$policyProperties.DisplayName
+                                $policyDescription=$detail.Description
+                                $policyDisplayName=$detail.DisplayName
                                 $tags=$ResourceGroup.Tags
 
                                 if ($tags['PROYECTO']) 
@@ -315,13 +317,14 @@ try {
                         }
                         else 
                         {
-                            $pol=Get-AzPolicyState -SubscriptionId $SubscriptionId -Filter "PolicyDefinitionName ne '0868462e-646c-4fe3-9ced-a733534b6a2c' AND PolicyDefinitionName ne '1c210e94-a481-4beb-95fa-1571b434fb04' 
-				    AND PolicyDefinitionName ne '053d3325-282c-4e5c-b944-24faffd30d77' AND PolicyDefinitionName ne 'a6cf7411-da9e-49e2-aec0-cba0250eaf8c'
-                            AND PolicyDefinitionName ne '11ac78e3-31bc-4f0c-8434-37ab963cea07' AND PolicyDefinitionName ne '32133ab0-ee4b-4b44-98d6-042180979d50' 
-                            AND PolicyDefinitionName ne 'cccc23c7-8427-4f53-ad12-b6a63eb452b3' AND PolicyDefinitionName ne 'e765b5de-1225-4ba3-bd56-1ac6695af988' 
-                            AND PolicyDefinitionName ne '96670d01-0a4d-4649-9c89-2d3abc0a5025' AND PolicyDefinitionName ne '5e0640c5-c4f2-4e14-9f61-5c80ba586b8d'
-                            AND PolicyDefinitionName ne 'e56962a6-4747-49cd-b67b-bf8b01975c4c' AND PolicySetDefinitionName ne '96670d01-0a4d-4649-9c89-2d3abc0a5025'
-                            AND PolicySetDefinitionName ne '1f3afdf9-d0c9-4c3d-847f-89da613e70a8' AND PolicySetDefinitionName ne '1a5bb27d-173f-493e-9568-eb56638dde4d'"
+                            $pol=Get-AzPolicyState -SubscriptionId $SubscriptionId -Filter "PolicyDefinitionName ne '0868462e-646c-4fe3-9ced-a733534b6a2c' 
+			    	AND PolicyDefinitionName ne '1c210e94-a481-4beb-95fa-1571b434fb04' AND PolicyDefinitionName ne 'd6b2009e-9ca0-446a-acce-f34213f7b803'			   
+				AND PolicyDefinitionName ne '053d3325-282c-4e5c-b944-24faffd30d77' AND PolicyDefinitionName ne 'a6cf7411-da9e-49e2-aec0-cba0250eaf8c'
+                            	AND PolicyDefinitionName ne '11ac78e3-31bc-4f0c-8434-37ab963cea07' AND PolicyDefinitionName ne '32133ab0-ee4b-4b44-98d6-042180979d50' 
+                            	AND PolicyDefinitionName ne 'cccc23c7-8427-4f53-ad12-b6a63eb452b3' AND PolicyDefinitionName ne 'e765b5de-1225-4ba3-bd56-1ac6695af988' 
+                            	AND PolicyDefinitionName ne '96670d01-0a4d-4649-9c89-2d3abc0a5025' AND PolicyDefinitionName ne '5e0640c5-c4f2-4e14-9f61-5c80ba586b8d'
+                            	AND PolicyDefinitionName ne 'e56962a6-4747-49cd-b67b-bf8b01975c4c' AND PolicySetDefinitionName ne '96670d01-0a4d-4649-9c89-2d3abc0a5025'
+                            	AND PolicySetDefinitionName ne '1f3afdf9-d0c9-4c3d-847f-89da613e70a8' AND PolicySetDefinitionName ne '1a5bb27d-173f-493e-9568-eb56638dde4d'"
 
                             if ($pol) 
                             {
@@ -352,8 +355,8 @@ try {
                                     $detail=Get-AzPolicyDefinition -Name $policyDefName -ErrorAction SilentlyContinue
                                     $policyProperties=$detail.Properties
 
-                                    $policyDescription=$policyProperties.Description
-                                    $policyDisplayName=$policyProperties.DisplayName
+                                    $policyDescription=$details.Description
+                                    $policyDisplayName=$details.DisplayName
 
                                     if ($policyResourceGroup) 
                                     {
