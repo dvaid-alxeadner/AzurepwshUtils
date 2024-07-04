@@ -43,7 +43,7 @@ function ManageAzPolicy{
     
     try
     {
-        $definition = Get-AzPolicyDefinition | Where-Object { $_.PolicyDefinitionId -eq $policyDefId }    
+        $definition = Get-AzPolicyDefinition | Where-Object { $_.Id -eq $policyDefId }    
 
         if ($definition) 
         {
