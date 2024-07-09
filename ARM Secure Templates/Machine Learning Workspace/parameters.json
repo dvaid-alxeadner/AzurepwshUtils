@@ -1,0 +1,62 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "name": 
+        {
+            "value": "mlworkspace202407",
+            "metadata": {
+                "description": "Azure Machine Learning Workspace name."
+            }
+        },
+        "storage_externalid": {
+            "value": "/subscriptions/<SubscriptionID>/resourceGroups/<ResourceGroupName>/providers/Microsoft.Storage/storageAccounts/<Storage Account Name>",
+            "metadata": {
+                "description": "id for the storage account for the machine learning service"
+            }
+        },
+        "keyvault_externalid": {
+            "value": "/subscriptions/<SubscriptionID>/resourceGroups/<ResourceGroupName>/providers/Microsoft.KeyVault/vaults/<Key Vault Name>",
+            "metadata": {
+                "description": "id for the key vault for the machine learning service"
+            }
+        },
+        "laworkspace_externalid": {
+            "value": "/subscriptions/<SubscriptionID>/resourceGroups/<ResourceGroupName>/providers/Microsoft.OperationalInsights/workspaces/<Log Analytics Workspace Name>",
+            "metadata": {
+                "description": "id for the log analytics for the machine learning service"
+            }
+        },
+        "privateEndpointName": {
+            "value": "PE_MLWRKSPC",
+            "metadata": {
+                "description": "Private endpoint name."
+            }
+        },
+        "targetSubResource": {
+            "value": [
+                "amlworkspace"
+            ]
+        },
+        "subnet": {
+            "value": "/subscriptions/<SubscriptionID>/resourceGroups/<ResourceGroupName>/providers/Microsoft.Network/virtualNetworks/<VNETName>/<SubnetName>",
+            "metadata": {
+                "description": "id for the subnet which private endpoint will be connected"
+            }
+        },
+        "environment_tag":
+        {
+            "value":"TEST",
+            "metadata": {
+                "description": "Tag to describe the enviroment"
+            }
+        },
+        "oi_tag":
+        {
+            "value":"10000111",
+            "metadata": {
+                "description": "Tag for budget classification"
+            }
+        }
+    }
+}
