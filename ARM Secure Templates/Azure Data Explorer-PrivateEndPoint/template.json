@@ -1,0 +1,98 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "dataexplorername": {
+            "type": "string"
+        },
+        "sku": {
+            "type": "string"
+        },
+        "tier": {
+            "type": "string"
+        },
+        "privateEndpointName": 
+        {
+            "type": "string"
+        },
+        "targetSubResource": 
+        {
+            "type": "array"
+        },
+        "subnet": {
+            "type": "string"
+        },
+        "environment_tag": 
+        {
+            "type": "string"
+        },
+        "oi_tag": {
+            "type": "string"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Kusto/Clusters",
+            "apiVersion": "2022-12-29",
+            "name": "[parameters('dataexplorername')]",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "AMBIENTE": "[parameters('environment_tag')]",
+                "OI": "[parameters('oi_tag')]"
+            },
+            "sku": {
+                "name": "[parameters('sku')]",
+                "tier": "[parameters('tier')]",
+                "capacity": 1
+            },
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "properties": {
+                "trustedExternalTenants": [],
+                "enableDiskEncryption": true,
+                "enableDoubleEncryption": true,
+                "enableStreamingIngest": false,
+                "languageExtensions": {
+                    "value": []
+                },
+                "enableDoubleEncryption": true,
+                "engineType": "V3",
+                "acceptedAudiences": [],
+                "restrictOutboundNetworkAccess": "Enabled",
+                "allowedFqdnList": [],
+                "publicNetworkAccess": "Disabled",
+                "allowedIpRangeList": [],
+                "enableAutoStop": true,
+                "publicIPType": "IPv4"
+            }
+        },
+        {
+            "location": "[resourceGroup().location]",
+            "name": "[parameters('privateEndpointName')]",
+            "type": "Microsoft.Network/privateEndpoints",
+            "apiVersion": "2021-05-01",
+            "properties": {
+                "subnet": {
+                    "id": "[parameters('subnet')]"
+                },
+                "customNetworkInterfaceName":  "[concat(parameters('privateEndpointName'),'-nic')]",
+                "privateLinkServiceConnections": [
+                    {
+                        "name": "[parameters('privateEndpointName')]",
+                        "properties": {
+                            "privateLinkServiceId": "[concat('/subscriptions/',subscription().subscriptionId,'/resourcegroups/',resourceGroup().name,'/providers/Microsoft.Kusto/clusters/',parameters('dataexplorername'))]",
+                            "groupIds": "[parameters('targetSubResource')]"
+                        }
+                    }
+                ]
+            },
+            "tags": {
+                "AMBIENTE": "[parameters('environment_tag')]",
+                "OI": "[parameters('oi_tag')]"
+            },
+            "dependsOn": ["[concat('Microsoft.Kusto/clusters/', parameters('dataexplorername'))]"]
+        }
+    ]
+}

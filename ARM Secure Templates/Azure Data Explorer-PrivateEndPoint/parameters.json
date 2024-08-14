@@ -1,0 +1,55 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "dataexplorername": {
+            "value": "dataexplorer202408",
+            "metadata": {
+                "description": "Data explorer name"
+            }
+        },
+        "sku": {
+            "value": "Dev(No SLA)_Standard_D11_v2",
+            "metadata": {
+                "description": "Stock Keeping Unit (Standard_D13_v2 / Standard_D14_v2 / L8 / L16 / L8s_v2 / L16s_v2)."
+            }
+        },
+        "tier" :{
+            "value": "Basic",
+            "metadata": {
+                "description": "Options for performance and capacity (Standard, Premiun, Dev (NO SLA)."
+            }
+        },
+        "privateEndpointName": {
+            "value": "PE_DATAEXPLORER",
+            "metadata": {
+                "description": "Private endpoint name."
+            }
+        },
+        "targetSubResource": {
+            "value": [
+                "cluster"
+            ]
+        },
+        "subnet": {
+            "value": "/subscriptions/<SubscriptionID>/resourceGroups/<ResourceGroupName>/providers/Microsoft.Network/virtualNetworks/<VNETName>",
+            "metadata": {
+                "description": "id for the subnet which private endpoint will be connected"
+            }
+        },
+        "environment_tag":
+        {
+            "value":"TEST",
+            "metadata": {
+                "description": "Tag to describe the enviroment"
+            }
+        },
+        "oi_tag":
+        {
+            "value":"10000111",
+            "metadata": {
+                "description": "Tag for budget classification"
+            }
+        }
+    }
+}
