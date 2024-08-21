@@ -1,0 +1,131 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "name":
+        {
+            "type": "string"
+        },
+        "datalake_externalid":
+        {
+            "type": "string"
+        },
+        "datalake_accountURL":
+        {
+            "type": "string"
+        },
+        "synapse_filesystem":
+        {
+            "type": "string"
+        },
+        "privateEndpointName":
+        {
+            "type": "string"
+        },
+        "targetSubResource": 
+        {
+            "type": "array"
+        },
+        "subnet":
+        {
+            "type": "string"
+        },
+        "environment_tag":
+        {
+            "type": "string"
+        },
+        "oi_tag":
+        {
+            "type": "string"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Synapse/workspaces",
+            "apiVersion": "2021-06-01",
+            "name": "[parameters('name')]",
+            "location": "[resourceGroup().location]",
+            "tags": 
+            {
+                "AMBIENTE": "[parameters('environment_tag')]",
+                "OI": "[parameters('oi_tag')]"
+            },
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "properties": {
+                "defaultDataLakeStorage": {
+                    "resourceId": "[parameters('datalake_externalid')]",
+                    "createManagedPrivateEndpoint": false,
+                    "accountUrl": "[parameters('datalake_accountURL')]",
+                    "filesystem": "[parameters('synapse_filesystem')]"
+                },
+                "encryption": {},
+                "managedVirtualNetwork": "default",
+                "connectivityEndpoints": {
+                    "web": "[concat('https://web.azuresynapse.net?workspace=%2fsubscriptions%2',subscription().subscriptionId,'%2fresourceGroups%2f',resourceGroup().name,'%2fproviders%2fMicrosoft.Synapse%2fworkspaces%2f', parameters('name'))]",
+                    "dev": "[concat('https://', parameters('name'), '.dev.azuresynapse.net')]",
+                    "sqlOnDemand": "[concat(parameters('name'), '-ondemand.sql.azuresynapse.net')]",
+                    "sql": "[concat(parameters('name'), '.sql.azuresynapse.net')]"
+                },
+                "managedVirtualNetworkSettings": {
+                    "preventDataExfiltration": true,
+                    "allowedAadTenantIdsForLinking": ["c980e410-0b5c-48bc-bd1a-8b91cabc84bc"]
+                },
+                "publicNetworkAccess": "Disabled",
+                "azureADOnlyAuthentication": true,
+                "trustedServiceBypassEnabled": true
+            }
+        },
+        {
+            "type": "Microsoft.Synapse/workspaces/azureADOnlyAuthentications",
+            "apiVersion": "2021-06-01",
+            "name": "[concat(parameters('name'), '/default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Synapse/workspaces', parameters('name'))]"
+            ],
+            "properties": {
+                "azureADOnlyAuthentication": true
+            }
+        },
+        {
+            "type": "Microsoft.Synapse/workspaces/dedicatedSQLminimalTlsSettings",
+            "apiVersion": "2021-06-01",
+            "name": "[concat(parameters('name'), '/default')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Synapse/workspaces', parameters('name'))]"
+            ],
+            "properties": {
+                "minimalTlsVersion": "1.2"
+            }
+        },
+        {
+            "location": "[resourceGroup().location]",
+            "name": "[parameters('privateEndpointName')]",
+            "type": "Microsoft.Network/privateEndpoints",
+            "apiVersion": "2021-05-01",
+            "properties": {
+                "subnet": {
+                    "id": "[parameters('subnet')]"
+                },
+                "customNetworkInterfaceName":  "[concat(parameters('privateEndpointName'),'-nic')]",
+                "privateLinkServiceConnections": [
+                    {
+                        "name": "[parameters('privateEndpointName')]",
+                        "properties": {
+                            "privateLinkServiceId": "[concat('/subscriptions/',subscription().subscriptionId,'/resourcegroups/',resourceGroup().name,'/providers/Microsoft.Synapse/workspaces/',parameters('name'))]",
+                            "groupIds": "[parameters('targetSubResource')]"
+                        }
+                    }
+                ]
+            },
+            "tags": {
+                "AMBIENTE": "[parameters('environment_tag')]",
+                "OI": "[parameters('oi_tag')]"
+            },
+            "dependsOn": ["[concat('Microsoft.Synapse/workspaces/',parameters('name'))]"]
+        }
+    ]
+}
