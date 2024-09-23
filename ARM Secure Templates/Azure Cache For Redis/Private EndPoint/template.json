@@ -2,17 +2,17 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-         "subscriptionId": {
-            "type": "string"
-        },
-        "resourceGroup":{
-            "type": "string"
-        },
         "redisname": {
             "type": "string"
         },
-        "location": {
+        "skuName": {
             "type": "string"
+        },
+        "skuFamily": {
+            "type": "string"
+        },
+        "skuCapacity": {
+            "type": "int"
         },
         "privateEndpointName": {
             "type": "string"
@@ -36,9 +36,9 @@
     "resources": [
         {
             "type": "Microsoft.Cache/Redis",
-            "apiVersion": "2022-06-01",
+            "apiVersion": "2024-03-01",
             "name": "[parameters('redisname')]",
-            "location": "[parameters('location')]",
+            "location": "[resourceGroup().location]",
             "tags": {
                 "AMBIENTE": "[parameters('environment_tag')]",
                 "OI": "[parameters('oi_tag')]"
@@ -46,23 +46,26 @@
             "properties": {
                 "redisVersion": "6.0",
                 "sku": {
-                    "name": "Basic",
-                    "family": "C",
-                    "capacity": 0
+                    "name": "[parameters('skuName')]",
+                    "family": "[parameters('skuFamily')]",
+                    "capacity": "[parameters('skuCapacity')]"
                 },
                 "enableNonSslPort": false,
                 "minimumTlsVersion": "1.2",
                 "publicNetworkAccess": "Disabled",
+                "updateChannel": "Stable",
+                "disableAccessKeyAuthentication": true,
                 "redisConfiguration": {
+                    "aad-enabled": "true",
+                    "maxclients": "256",
                     "maxmemory-reserved": "30",
                     "maxfragmentationmemory-reserved": "30",
-                    "maxmemory-policy": "volatile-lru",
                     "maxmemory-delta": "30"
                 }
             }
         },
         {
-            "location": "[parameters('location')]",
+            "location": "[resourceGroup().location]",
             "name": "[parameters('privateEndpointName')]",
             "type": "Microsoft.Network/privateEndpoints",
             "apiVersion": "2021-05-01",
@@ -75,7 +78,7 @@
                     {
                         "name": "[parameters('privateEndpointName')]",
                         "properties": {
-                            "privateLinkServiceId": "[concat('/subscriptions/',parameters('subscriptionId'),'/resourcegroups/',parameters('resourceGroup'),'/providers/Microsoft.Cache/Redis/',parameters('redisname'))]",
+                            "privateLinkServiceId": "[concat('/subscriptions/',subscription().subscriptionId,'/resourcegroups/',resourceGroup().name,'/providers/Microsoft.Cache/Redis/',parameters('redisname'))]",
                             "groupIds": "[parameters('targetSubResource')]"
                         }
                     }
