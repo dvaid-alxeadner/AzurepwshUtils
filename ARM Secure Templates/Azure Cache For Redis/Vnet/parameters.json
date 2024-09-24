@@ -2,16 +2,28 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "location": {
-            "value": "eastus2",
-            "metadata": {
-                "description": "Location of the cache for redis ."
-            }
-        },
         "redisname": {
-            "value": "redis20230228",
+            "value": "redis202409",
             "metadata": {
                 "description": "Cache for redis name."
+            }
+        },
+        "skuName": {
+            "value": "Standard",
+            "metadata": {
+                "description": "Name of the SKU (Standard or Premium only)"
+            }
+        },
+        "skuFamily": {
+            "value": "C",
+            "metadata": {
+                "description": "Family of the SKU (Only C or P are supported)"
+            }
+        },
+        "skuCapacity": {
+            "value": 0,
+            "metadata": {
+                "description": "Capacity of the SKU (From zero to six)"
             }
         },
         "subnet": {

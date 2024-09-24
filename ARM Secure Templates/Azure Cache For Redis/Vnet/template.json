@@ -5,8 +5,14 @@
         "redisname": {
             "type": "string"
         },
-        "location": {
+        "skuName": {
             "type": "string"
+        },
+        "skuFamily": {
+            "type": "string"
+        },
+        "skuCapacity": {
+            "type": "int"
         },
         "subnet": {
             "type": "string"
@@ -24,9 +30,9 @@
     "resources": [
         {
             "type": "Microsoft.Cache/Redis",
-            "apiVersion": "2022-06-01",
+            "apiVersion": "2024-03-01",
             "name": "[parameters('redisname')]",
-            "location": "[parameters('location')]",
+            "location": "[resourceGroup().location]",
             "tags": {
                 "AMBIENTE": "[parameters('environment_tag')]",
                 "OI": "[parameters('oi_tag')]"
@@ -34,17 +40,20 @@
             "properties": {
                 "redisVersion": "6.0",
                 "sku": {
-                    "name": "Premium",
-                    "family": "P",
-                    "capacity": 1
+                    "name": "[parameters('skuName')]",
+                    "family": "[parameters('skuFamily')]",
+                    "capacity": "[parameters('skuCapacity')]"
                 },
                 "enableNonSslPort": false,
                 "minimumTlsVersion": "1.2",
                 "publicNetworkAccess": "Disabled",
+                "updateChannel": "Stable",
+                "disableAccessKeyAuthentication": true,
                 "redisConfiguration": {
+                    "aad-enabled": "true",
+                    "maxclients": "256",
                     "maxmemory-reserved": "30",
                     "maxfragmentationmemory-reserved": "30",
-                    "maxmemory-policy": "volatile-lru",
                     "maxmemory-delta": "30"
                 },
                 "subnetId": "[parameters('subnet')]"
