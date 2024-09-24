@@ -32,20 +32,40 @@ Write-Output "La maquina $vmName esta en el estado $status al iniciar la toma de
 
 $uriVM=$vm.StorageProfile.OsDisk.ManagedDisk.Id
 $uriVMString=$uriVM.ToString()
-$snap=New-AzSnapshotConfig -SourceUri $uriVMString -Location $location -CreateOption copy -Tag @{FechaCreacion=$date.ToString()}
+$snapswap=New-AzSnapshotConfig -SourceUri $uriVMString -Location $location -CreateOption copy -Tag @{FechaCreacion=$date.ToString()}
+$snapshotswapName=$vmName + "OSdisk" + $date
+$snapshotswap=New-AzSnapshot -Snapshot $snapswap -SnapshotName $snapshotswapName -ResourceGroupName $rg
 
-$snapshot=New-AzSnapshot -Snapshot $snap -SnapshotName $snapshotName -ResourceGroupName $rg
+$datadiskname=$vm.StorageProfile.DataDisks.Name
 
-if($snapshot)
+if($datadiskname)
 {
-    Write-Output "Snapshot $snapshotName creada correctamente"
+    $datadisk=Get-AzDisk -ResourceGroupName $rg -DiskName $datadiskname
+    $uriData=$datadisk.Id
+    $uriDataString=$uriData.ToString()
+    $snap=New-AzSnapshotConfig -SourceUri $uriDataString -Location $location -CreateOption copy -Tag @{FechaCreacion=$date.ToString()}
+    $snapshot=New-AzSnapshot -Snapshot $snap -SnapshotName $snapshotName -ResourceGroupName $rg
+
+    if($snapshot)
+    {
+        Write-Output "Snapshot $snapshotName creada correctamente"
+    }
+    else
+    {
+        Write-Output "Falla al crear snapshot $snapshotName"
+    }
+}
+
+if($snapshotswap)
+{
+    Write-Output "Snapshot $snapshotswapName creada correctament"    
     $statusArray=Get-AzVM -ResourceGroupName $rg -Name $vmName -Status
     $status=$statusArray.Statuses[1].Code
     Write-Output "La maquina $vmName esta en el estado $status al finalizar la toma de la snapshot"
 }
 else
 {
-    Write-Output "Falla al crear snapshot $snapshotName"
+    Write-Output "Falla al crear snapshot $snapshotswapName"
     $statusArray=Get-AzVM -ResourceGroupName $rg -Name $vmName -Status
     $status=$statusArray.Statuses[1].Code
     Write-Output "La maquina $vmName esta en el estado $status al fallar la toma de la snapshot"
