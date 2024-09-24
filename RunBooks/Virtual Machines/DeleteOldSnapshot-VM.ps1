@@ -21,12 +21,33 @@ $snaptodelete=Get-AzSnapshot -ResourceGroupName $rg | Where-Object {$_.TimeCreat
 
 $snaptodelete | Remove-AzSnapshot -Force
 
-if($snaptodelete)
+$isarray=$snaptodelete -is [array]
+
+if($isarray)
 {
-    $snapName=$snaptodelete.Name
-    Write-Output "La snapshot $snapName se elimino correctamente"
+    foreach ($snaptodelete in $row) 
+    {
+        $snapsName=$row.Name
+        
+        if($snapsName)
+        {
+            Write-Output "La snapshot $snapsName se elimino correctamente"
+        }
+        else
+        {
+            Write-Output "No se elimino la snapshot $snapsName"
+        }
+    }
 }
 else
 {
-    Write-Output "No se elimino ninguna snapshot"
+    if($snaptodelete)
+    {
+        $snapName=$snaptodelete.Name
+        Write-Output "La snapshot $snapName se elimino correctamente"
+    }
+    else
+    {
+        Write-Output "No se elimino ninguna snapshot"
+    }
 }
