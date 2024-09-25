@@ -2,15 +2,6 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "subscriptionId": {
-            "type": "string"
-        },
-        "resourceGroup": {
-            "type": "string"
-        },
-        "location": {
-            "type": "string"
-        },
         "signalrname": {
             "type": "string"
         },
@@ -50,7 +41,7 @@
             "name": "[parameters('signalrname')]",
             "type": "Microsoft.SignalRService/SignalR",
             "apiVersion": "2022-08-01-preview",
-            "location": "[parameters('location')]",
+            "location": "[resourceGroup().location]",
             "properties": {
                 "features": [
                     {
@@ -72,7 +63,7 @@
                 ],
                 "cors": {
                     "allowedOrigins": [
-                        "https://www.allowedsite.com"
+                        "https://www.xm.com.co"
                     ]
                 },
                 "disableLocalAuth": true,
@@ -100,7 +91,7 @@
             }
         },
         {
-            "location": "[parameters('location')]",
+            "location": "[resourceGroup().location]",
             "name": "[parameters('privateEndpointName')]",
             "type": "Microsoft.Network/privateEndpoints",
             "apiVersion": "2021-05-01",
@@ -113,14 +104,14 @@
                     {
                         "name": "[parameters('privateEndpointName')]",
                         "properties": {
-                            "privateLinkServiceId": "[concat('/subscriptions/',parameters('subscriptionId'),'/resourcegroups/',parameters('resourceGroup'),'/providers/Microsoft.SignalRService/SignalR/',parameters('signalrname'))]",
+                            "privateLinkServiceId": "[concat('/subscriptions/',subscription().subscriptionId,'/resourcegroups/',resourceGroup().name,'/providers/Microsoft.SignalRService/SignalR/',parameters('signalrname'))]",
                             "groupIds": "[parameters('targetSubResource')]"
                         }
                     }
                 ]
             },
             "tags": {},
-            "dependsOn": ["[concat('Microsoft.SignalRService/SignalR/', parameters('signalrname'))]"]
+            "dependsOn": ["[concat('Microsoft.SignalRService/SignalR/',parameters('signalrname'))]"]
         }
     ],
     "outputs": {}
