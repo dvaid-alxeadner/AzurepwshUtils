@@ -2,28 +2,34 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "subscriptionId": {
-            "value": "<aabbccdd-ffff-aabb-ccdd-aabbccddeeff>",
-            "metadata": {
-                "description": "id of the Azure Subscription"
-            }
-        },
-        "resourceGroup": {
-            "value": "<Resource Group>",
-            "metadata": {
-                "description": "Resource group name."
-            }
-        },
-        "location": {
-            "value": "eastus2",
-            "metadata": {
-                "description": "Location of the Web PubSub."
-            }
-        },
         "webpubsubname": {
-            "value": "webpubsub20230314",
+            "value": "webpubsub202410",
             "metadata": {
                 "description": "Web PubSub name."
+            }
+        },
+        "skuName": {
+            "value": "Standard_S1",
+            "metadata": {
+                "description": "Name of the SKU (Standard or Premium only)"
+            }
+        },
+        "skuTier": {
+            "value": "Standard",
+            "metadata": {
+                "description": "Tier of the SKU (Only Standard or Premium are supported)"
+            }
+        },
+        "skuSize": {
+            "value": "S1",
+            "metadata": {
+                "description": "Size of the SKU (Only S or P are supported)"
+            }
+        },
+        "skuCapacity": {
+            "value": 1,
+            "metadata": {
+                "description": "Capacity of the SKU (From 1 to 100)"
             }
         },
         "privateEndpointName": {

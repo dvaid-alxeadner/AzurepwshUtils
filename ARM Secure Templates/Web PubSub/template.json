@@ -2,17 +2,20 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "subscriptionId": {
-            "type": "string"
-        },
-        "resourceGroup": {
-            "type": "string"
-        },
-        "location": {
-            "type": "string"
-        },
         "webpubsubname": {
             "type": "string"
+        },
+        "skuName": {
+            "type": "string"
+        },
+        "skuTier": {
+            "type": "string"
+        },
+        "skuSize": {
+            "type": "string"
+        },
+        "skuCapacity": {
+            "type": "int"
         },
          "privateEndpointName": {
             "type": "string"
@@ -38,16 +41,16 @@
             "type": "Microsoft.SignalRService/WebPubSub",
             "apiVersion": "2022-08-01-preview",
             "name": "[parameters('webpubsubname')]",
-            "location": "[parameters('location')]",
+            "location": "[resourceGroup().location]",
             "tags": {
                 "AMBIENTE": "[parameters('environment_tag')]",
                 "OI": "[parameters('oi_tag')]"
             },
             "sku": {
-                "name": "Standard_S1",
-                "tier": "Standard",
-                "size": "S1",
-                "capacity": 1
+                "name": "[parameters('skuName')]",
+                "tier": "[parameters('skuTier')]",
+                "size": "[parameters('skuSize')]",
+                "capacity": "[parameters('skuCapacity')]"
             },
             "properties": {
                 "tls": {
@@ -59,7 +62,7 @@
             }
         },
         {
-            "location": "[parameters('location')]",
+            "location": "[resourceGroup().location]",
             "name": "[parameters('privateEndpointName')]",
             "type": "Microsoft.Network/privateEndpoints",
             "apiVersion": "2021-05-01",
@@ -72,7 +75,7 @@
                     {
                         "name": "[parameters('privateEndpointName')]",
                         "properties": {
-                            "privateLinkServiceId": "[concat('/subscriptions/',parameters('subscriptionId'),'/resourcegroups/',parameters('resourceGroup'),'/providers/Microsoft.SignalRService/WebPubSub/',parameters('webpubsubname'))]",
+                            "privateLinkServiceId": "[concat('/subscriptions/',subscription().subscriptionId,'/resourcegroups/',resourceGroup().name,'/providers/Microsoft.SignalRService/WebPubSub/',parameters('webpubsubname'))]",
                             "groupIds": "[parameters('targetSubResource')]"
                         }
                     }
