@@ -347,7 +347,7 @@ try {
         # Function app slots should use latest HTTP Version
         # Effect AuditIFNotExists
         $policyName = "audit-httpv-funcappslt"
-        $displayName = "24) Function app slots should only be accessible over HTTPS"
+        $displayName = "24) Function app slots should use latest HTTP Version"
         $Description = "Para cumplir la linea base de seguridad de Azure todos los function app slots deben utilizar unicamente la ultima version de HTTP."
         ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/fa98f1b1-1f56-4179-9faf-93ad82f3458f" $Description $policyName $scope $displayName "Y"
 
