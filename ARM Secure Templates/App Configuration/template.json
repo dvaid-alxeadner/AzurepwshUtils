@@ -2,15 +2,6 @@
     "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "subscriptionId": {
-            "type": "string"
-        },
-        "resourceGroup":{
-            "type": "string"
-        },
-        "location": {
-            "type": "string"
-        },
         "appconfname": {
             "type": "string"
         },
@@ -36,7 +27,7 @@
             "type": "Microsoft.AppConfiguration/configurationStores",
             "apiVersion": "2022-05-01",
             "name": "[parameters('appconfname')]",
-            "location": "[parameters('location')]",
+            "location": "[resourceGroup().location]",
             "dependsOn": [],
             "tags": {
                 "AMBIENTE": "[parameters('environment_tag')]",
@@ -49,11 +40,15 @@
                 "softDeleteRetentionInDays": 7,
                 "enablePurgeProtection": true,
                 "disableLocalAuth": true,
-                "publicNetworkAccess": "Disabled"
+                "publicNetworkAccess": "Disabled",
+                "dataPlaneProxy": {
+                    "authenticationMode": "Pass-through",
+                    "privateLinkDelegation": "Enabled"
+                }
             }
         },
         {
-            "location": "[parameters('location')]",
+            "location": "[resourceGroup().location]",
             "name": "[parameters('privateEndpointName')]",
             "type": "Microsoft.Network/privateEndpoints",
             "apiVersion": "2021-05-01",
@@ -66,7 +61,7 @@
                     {
                         "name": "[parameters('privateEndpointName')]",
                         "properties": {
-                            "privateLinkServiceId": "[concat('/subscriptions/',parameters('subscriptionId'),'/resourcegroups/',parameters('resourceGroup'),'/providers/Microsoft.AppConfiguration/configurationStores/',parameters('appconfname'))]",
+                            "privateLinkServiceId": "[concat('/subscriptions/',subscription().subscriptionId,'/resourcegroups/',resourceGroup().name,'/providers/Microsoft.AppConfiguration/configurationStores/',parameters('appconfname'))]",
                             "groupIds": "[parameters('targetSubResource')]"
                         }
                     }

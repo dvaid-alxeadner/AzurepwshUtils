@@ -2,32 +2,14 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "subscriptionId": {
-            "value": "<aabbccdd-ffff-aabb-ccdd-aabbccddeeff>",
-            "metadata": {
-                "description": "id of the Azure Subscription"
-            }
-        },
-        "resourceGroup":{
-            "value": "<Resource Group>",
-            "metadata":{
-                "description": "Resource group name."
-            }
-        },
-        "location": {
-            "value": "eastus2",
-            "metadata": {
-                "description": "Location of the app configuration."
-            }
-        },
         "appconfname": {
-            "value": "appconfiguration20230302",
-	    "metadata": {
+            "value": "appconfiguration202411",
+            "metadata": {
                 "description": "App configuration name."
             }
         },
         "privateEndpointName": {
-            "value": "PE_APPCONF",
+            "value": "PE_APPCONFIG",
             "metadata": {
                 "description": "Private endpoint name."
             }
@@ -45,14 +27,14 @@
         },
         "environment_tag":
         {
-            "value":"PRUEBAS",
+            "value":"TEST",
             "metadata": {
                 "description": "Tag to describe the enviroment"
             }
         },
         "oi_tag":
         {
-            "value":"600085214",
+            "value":"10000111",
             "metadata": {
                 "description": "Tag for budget classification"
             }
