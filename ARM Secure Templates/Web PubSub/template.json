@@ -1,23 +1,11 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "webpubsubname": {
+        "appconfname": {
             "type": "string"
         },
-        "skuName": {
-            "type": "string"
-        },
-        "skuTier": {
-            "type": "string"
-        },
-        "skuSize": {
-            "type": "string"
-        },
-        "skuCapacity": {
-            "type": "int"
-        },
-         "privateEndpointName": {
+        "privateEndpointName": {
             "type": "string"
         },
         "targetSubResource": {
@@ -26,8 +14,7 @@
         "subnet": {
             "type": "string"
         },
-        "environment_tag":
-        {
+        "environment_tag": {
             "type": "string"
         },
         "oi_tag":
@@ -35,30 +22,29 @@
             "type": "string"
         }
     },
-    "variables": {},
     "resources": [
         {
-            "type": "Microsoft.SignalRService/WebPubSub",
-            "apiVersion": "2022-08-01-preview",
-            "name": "[parameters('webpubsubname')]",
+            "type": "Microsoft.AppConfiguration/configurationStores",
+            "apiVersion": "2022-05-01",
+            "name": "[parameters('appconfname')]",
             "location": "[resourceGroup().location]",
+            "dependsOn": [],
             "tags": {
                 "AMBIENTE": "[parameters('environment_tag')]",
                 "OI": "[parameters('oi_tag')]"
-            },
+            },          
             "sku": {
-                "name": "[parameters('skuName')]",
-                "tier": "[parameters('skuTier')]",
-                "size": "[parameters('skuSize')]",
-                "capacity": "[parameters('skuCapacity')]"
+                "name": "standard"
             },
             "properties": {
-                "tls": {
-                    "clientCertEnabled": false
-                },
-                "publicNetworkAccess": "Disabled",
+                "softDeleteRetentionInDays": 7,
+                "enablePurgeProtection": true,
                 "disableLocalAuth": true,
-                "disableAadAuth": false
+                "publicNetworkAccess": "Disabled",
+                "dataPlaneProxy": {
+                    "authenticationMode": "Pass-through",
+                    "privateLinkDelegation": "Enabled"
+                }
             }
         },
         {
@@ -75,14 +61,15 @@
                     {
                         "name": "[parameters('privateEndpointName')]",
                         "properties": {
-                            "privateLinkServiceId": "[concat('/subscriptions/',subscription().subscriptionId,'/resourcegroups/',resourceGroup().name,'/providers/Microsoft.SignalRService/WebPubSub/',parameters('webpubsubname'))]",
+                            "privateLinkServiceId": "[concat('/subscriptions/',subscription().subscriptionId,'/resourcegroups/',resourceGroup().name,'/providers/Microsoft.AppConfiguration/configurationStores/',parameters('appconfname'))]",
                             "groupIds": "[parameters('targetSubResource')]"
                         }
                     }
                 ]
             },
             "tags": {},
-            "dependsOn": ["[concat('Microsoft.SignalRService/WebPubSub/', parameters('webpubsubname'))]"]
+            "dependsOn": ["[concat('Microsoft.AppConfiguration/configurationStores/', parameters('appconfname'))]"]
         }
-    ]
+    ],
+    "outputs": {}
 }

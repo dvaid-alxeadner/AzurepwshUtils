@@ -2,45 +2,21 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "webpubsubname": {
-            "value": "webpubsub202410",
+        "appconfname": {
+            "value": "appconfiguration202411",
             "metadata": {
-                "description": "Web PubSub name."
-            }
-        },
-        "skuName": {
-            "value": "Standard_S1",
-            "metadata": {
-                "description": "Name of the SKU (Standard or Premium only)"
-            }
-        },
-        "skuTier": {
-            "value": "Standard",
-            "metadata": {
-                "description": "Tier of the SKU (Only Standard or Premium are supported)"
-            }
-        },
-        "skuSize": {
-            "value": "S1",
-            "metadata": {
-                "description": "Size of the SKU (Only S or P are supported)"
-            }
-        },
-        "skuCapacity": {
-            "value": 1,
-            "metadata": {
-                "description": "Capacity of the SKU (From 1 to 100)"
+                "description": "App configuration name."
             }
         },
         "privateEndpointName": {
-            "value": "PE_WEBPUBSUB",
+            "value": "PE_APPCONFIG",
             "metadata": {
                 "description": "Private endpoint name."
             }
         },
         "targetSubResource": {
             "value": [
-                "webpubsub"
+                "configurationStores"
             ]
         },
         "subnet": {
