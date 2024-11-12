@@ -1379,13 +1379,13 @@ try {
         $Description = "Para cumplir la linea base de seguridad de Azure todas las cuentas de storage deben estar conectadas a una VNET."
         ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/6edd7eda-6dd8-40f7-810d-67160c639cd9" $Description $policyName $scope $displayName "Y" "AuditIfNotExists"
 
-        # Storage accounts should be migrated to new Azure Resource Manager resources
+        # App Configuration should use a customer-managed key
         # Effect DENY
-        $policyName = "deny-azarm-strg"
-        $displayName = "171) Storage accounts should be migrated to new Azure Resource Manager resources"
-        $Description = "Para cumplir la linea base de seguridad de Azure todas las cuentas de storage deben migrarse a Azure Resource Manager para usar las caracteristicas de seguridad avanzada"
-        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/37e0d2fe-28a5-43d6-a273-67d37d1f5606" $Description $policyName $scope $displayName "Y" "Audit"
-
+        $policyName = "deny-byok-appconf"
+        $displayName = "171) App Configuration should use a customer-managed key"
+        $Description = "Para cumplir la linea base de seguridad de Azure y los controles CIS las app configuration deben utilizar el cifrado con llave de cliente (Customer Managed Key)."
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/967a4b4b-2da9-43c1-b7d0-f98d0d74d0b1" $Description $policyName $scope $displayName "Y" "Audit"
+       
         # Azure Backup should be enabled for Virtual Machines
         # Effect AuditIfNotExists
         $policyName = "audit-azbackup-vm"
@@ -1801,6 +1801,41 @@ try {
         $displayName = "230) Azure Event Grid namespace MQTT broker should use private link"
         $Description = "Para cumplir la linea base de seguridad de Azure los Event Grid Namespace MQTT Broker deben estar conectados a una VNET"
         ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/cd8f7644-6fe8-4516-bded-0e465ead03ac" $Description $policyName $scope $displayName "Y" "Audit"
+
+        # Azure Machine Learning compute instances should be recreated to get the latest software updates 
+        # Effect Audit
+        $policyName = "audit-softupdates-mlw"
+        $displayName = "231) Azure Machine Learning compute instances should be recreated to get the latest software updates"
+        $Description = "Para cumplir la linea base de seguridad de Azure los Machine Learning deben recrear las instancias computacionales obteniendo las últimas actualizaciones del software."
+        ManageAzPolicy  "/providers/Microsoft.Authorization/policyDefinitions/f110a506-2dcb-422e-bcea-d533fc8c35e2" $Description $policyName $scope $displayName "Y"
+        
+        # Disk encryption should be enabled on Azure Data Explorer
+        # Effect DENY
+        $policyName = "deny-diskenc-dtex"
+        $displayName = "232) Disk encryption should be enabled on Azure Data Explorer"
+        $Description = "Para cumplir la linea base de seguridad de Azure, los Azure Data Explorer deben tener habilitado el cifrado a nivel de disco."
+        ManageAzPolicy  "/providers/Microsoft.Authorization/policyDefinitions/f4b53539-8df9-40e4-86c6-6b607703bd4e" $Description $policyName $scope $displayName "Y" "Deny"
+        
+        # All Database Admin on Azure Data Explorer should be disabled
+        # Effect DENY
+        $policyName = "deny-dsibldadmin-dtex"
+        $displayName = "233) All Database Admin on Azure Data Explorer should be disabled"
+        $Description = "Para cumplir la linea base de seguridad de Azure, los Azure Data Explorer deben deshabilitados todos los administradores de base de datos."
+        ManageAzPolicy  "/providers/Microsoft.Authorization/policyDefinitions/8945ba5e-918e-4a57-8117-fe615d12e3ba" $Description $policyName $scope $displayName "Y" "Deny"
+       
+        # Azure Cache for Redis Enterprise should use private link
+        # Effect AuditIfNotExists
+        $policyName = "audit-plinkenterp-redis"
+        $displayName = "234) Azure Cache for Redis Enterprise should use private link"
+        $Description = "Para cumplir la linea base de seguridad de Azure las redis cache enterprise deben estar conectadas a una VNET"
+        ManageAzPolicy  "/providers/Microsoft.Authorization/policyDefinitions/960e650e-9ce3-4316-9590-8ee2c016ca2f" $Description $policyName $scope $displayName "Y"
+       
+        # Azure Cache for Redis should not use access keys for authentication
+        # Effect DENY
+        $policyName = "deny-accesskeys-redis"
+        $displayName = "235) Azure Cache for Redis should not use access keys for authentication"
+        $Description = "Para cumplir la linea base de seguridad de Azure las redis cache deben tener deshabilitadas las llaves de acceso y en su lugar usar Microsoft Entra ID"
+        ManageAzPolicy  "/providers/Microsoft.Authorization/policyDefinitions/3827af20-8f80-4b15-8300-6db0873ec901" $Description $policyName $scope $displayName "Y" "Deny"
     }
 }
 Catch
