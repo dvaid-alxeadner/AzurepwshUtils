@@ -1836,6 +1836,20 @@ try {
         $displayName = "235) Azure Cache for Redis should not use access keys for authentication"
         $Description = "Para cumplir la linea base de seguridad de Azure las redis cache deben tener deshabilitadas las llaves de acceso y en su lugar usar Microsoft Entra ID"
         ManageAzPolicy  "/providers/Microsoft.Authorization/policyDefinitions/3827af20-8f80-4b15-8300-6db0873ec901" $Description $policyName $scope $displayName "Y" "Deny"
+
+        # Bot Protection should be enabled for Azure Application Gateway WAF 
+        # Effect DENY
+        $policyName = "deny-botprot-appgtwy"
+        $displayName = "236) Bot Protection should be enabled for Azure Application Gateway WAF"
+        $Description = "Para cumplir la linea base de seguridad de Azure los Application Gateway deben tener habilitada la proteccion contra bots."
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/ebea0d86-7fbd-42e3-8a46-27e7568c2525" $Description $policyName $scope $displayName "Y" "Deny"
+        
+        # Azure Application Gateway should have Resource logs enabled
+        # Effect AuditIfNotExists
+        $policyName = "deny-reslog-appgtwy"
+        $displayName = "237) Azure Application Gateway should have Resource logs enabled"
+        $Description = "Para cumplir la linea base de seguridad de Azure los Application Gateway deben enviar los logs hacia un Log Analytics."
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/8a04f872-51e9-4313-97fb-fc1c3543011c" $Description $policyName $scope $displayName "Y" "AuditIfNotExists"
     }
 }
 Catch
