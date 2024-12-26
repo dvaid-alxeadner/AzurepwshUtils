@@ -1850,6 +1850,27 @@ try {
         $displayName = "237) Azure Application Gateway should have Resource logs enabled"
         $Description = "Para cumplir la linea base de seguridad de Azure los Application Gateway deben enviar los logs hacia un Log Analytics."
         ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/8a04f872-51e9-4313-97fb-fc1c3543011c" $Description $policyName $scope $displayName "Y" "AuditIfNotExists"
+        
+        # Azure Policy Add-on for Kubernetes service (AKS) should be installed and enabled on your clusters
+        # Effect DENY
+        $policyName = "deny-nakedpods-aks"
+        $displayName = "238) Kubernetes cluster should not use naked pods"
+        $Description = "Para cumplir la linea base de seguridad de Azure los clusters AKS no deben tener pods que no esten gestionados por el Kubernetes (naked pods)"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/65280eef-c8b4-425e-9aec-af55e55bf581" $Description $policyName $scope $displayName $null "Deny"
+
+        # Role-Based Access Control (RBAC) should be used on Kubernetes Services
+        # Effect Audit
+        $policyName = "audit-rbac-aks"
+        $displayName = "239) Role-Based Access Control (RBAC) should be used on Kubernetes Services"
+        $Description = "Para cumplir la linea base de seguridad de Azure los AKS deben utilizar control de acceso bajo RBAC"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/ac4a19c2-fa67-49b4-8ae5-0b2e78c49457" $Description $policyName $scope $displayName "Y" "Audit"
+
+        # Kubernetes clusters should use internal load balancers
+        # Efect DENY
+        $policyName = "deny-intloadb-aks"
+        $displayName = "240) Kubernetes clusters should use internal load balancers"
+        $Description = "Para cumplir la linea base de seguridad de Azure los cluster de Azure Kubernetes deben usar balanceadores internos."
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/3fc4dc25-5baf-40d8-9b05-7fe74c1bc64e" $Description $policyName $scope $displayName $null "Deny"
     }
 }
 Catch
