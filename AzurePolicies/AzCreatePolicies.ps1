@@ -1866,11 +1866,32 @@ try {
         ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/ac4a19c2-fa67-49b4-8ae5-0b2e78c49457" $Description $policyName $scope $displayName "Y" "Audit"
 
         # Kubernetes clusters should use internal load balancers
-        # Efect DENY
+        # Effect DENY
         $policyName = "deny-intloadb-aks"
         $displayName = "240) Kubernetes clusters should use internal load balancers"
         $Description = "Para cumplir la linea base de seguridad de Azure los cluster de Azure Kubernetes deben usar balanceadores internos."
         ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/3fc4dc25-5baf-40d8-9b05-7fe74c1bc64e" $Description $policyName $scope $displayName $null "Deny"
+
+        # Kubernetes clusters should use internal load balancers
+        # Effect DENY
+        $policyName = "deny-intloadb-aks"
+        $displayName = "240) Kubernetes clusters should use internal load balancers"
+        $Description = "Para cumplir la linea base de seguridad de Azure los cluster de Azure Kubernetes deben usar balanceadores internos."
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/3fc4dc25-5baf-40d8-9b05-7fe74c1bc64e" $Description $policyName $scope $displayName $null "Deny"
+
+        # Container registries should not allow unrestricted network access
+        # Effect DENY
+        $policyName = "deny-restnetacc-acr"
+        $displayName = "241) Container registries should not allow unrestricted network access"
+        $Description = "Para cumplir la linea base de seguridad de Azure los Azure Container Registry deben restringir el acceso a nivel de red."
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/3fc4dc25-5baf-40d8-9b05-7fe74c1bc64e" $Description $policyName $scope $displayName $null "Deny"
+
+        # Container registries should be encrypted with a customer-managed key
+        # Effect DENY
+        $policyName = "deny-cmkey-acr"
+        $displayName = "242) Container registries should be encrypted with a customer-managed key"
+        $Description = "Para cumplir la linea base de seguridad de Azure los Azure Container Registry deben tener habilitado el cifrado en reposo con llaves administradas por XM"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/5b9159ae-1701-4a6f-9a7a-aa9c8ddd0580" $Description $policyName $scope $displayName "Y" "Deny"
     }
 }
 Catch
