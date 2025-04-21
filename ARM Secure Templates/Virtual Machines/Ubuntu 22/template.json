@@ -136,7 +136,8 @@
                             "patchMode": "AutomaticByPlatform",
                             "automaticByPlatformSettings": {
                                 "rebootSetting": "Never"
-                            }
+                            }.
+                        "assessmentMode": "AutomaticByPlatform"
                         }
                     }
                 },
