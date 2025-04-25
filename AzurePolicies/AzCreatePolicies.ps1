@@ -254,11 +254,11 @@ try {
         ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/399b2637-a50f-4f95-96f8-3a145476eb15" $Description $policyName $scope $displayName "Y"
 
         # Function apps should only be accessible over HTTPS
-        # Effect AuditIfNotExists
-        $policyName = "audit-https-funcapp"
+        # Effect Deny
+        $policyName = "deny-https-funcapp"
         $displayName = "11) Function apps should only be accessible over HTTPS"
         $Description = "Para cumplir la linea base de seguridad de Azure todas las Function App deben tener habilitado el https only."
-        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/6d555dd1-86f2-4f1c-8ed7-5abae7c6cbab" $Description $policyName $scope $displayName "Y"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/6d555dd1-86f2-4f1c-8ed7-5abae7c6cbab" $Description $policyName $scope $displayName "Y" "Deny"
 
         # Function apps should have remote debugging turned off
         # Effect AuditIfNotExists
@@ -1892,6 +1892,216 @@ try {
         $displayName = "242) Container registries should be encrypted with a customer-managed key"
         $Description = "Para cumplir la linea base de seguridad de Azure los Azure Container Registry deben tener habilitado el cifrado en reposo con llaves administradas por XM"
         ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/5b9159ae-1701-4a6f-9a7a-aa9c8ddd0580" $Description $policyName $scope $displayName "Y" "Deny"
+
+        # Machines should have secret findings resolved 
+        # Effect AuditIfNotExists
+        $policyName = "audit-secrets-vm"
+        $displayName = "243) Machines should have secret findings resolved"
+        $Description = "Para cumplir la linea base de seguridad de Azure las maquinas virtuales no deben tener hallazgos relacionados a secretos, se debe usar Azure Key Vault"
+        ManageAzPolicy  "/providers/Microsoft.Authorization/policyDefinitions/3ac7c827-eea2-4bde-acc7-9568cd320efa" $Description $policyName $scope $displayName "Y"
+
+        # Only approved VM extensions should be installed
+        # Effect AuditIfNotExists
+        $policyName = "audit-apprvdext-vm"
+        $guest="GuestAttestationExtension" # ["GuestAttestation","ChangeTracking-Windows","ChangeTracking-Linux","AADLoginForWindows","AzureBackupWindowsWorkload","SqlIaasExtension","MicrosoftMonitoringAgent"]
+        $displayName = "244) Only approved VM extensions should be installed"
+        $Description = "Para cumplir la linea base de seguridad de Azure las maquinas virtuales solo deben utilizar extensiones previamente aprobadas"
+        $extensions =@($guest)
+
+        # Management ports should be closed on your virtual machines
+        # Effect AuditIfNotExists
+        $policyName = "audit-managports-vm"
+        $displayName = "245) Management ports should be closed on your virtual machines"
+        $Description = "Para cumplir la linea base de seguridad de Azure las maquinas virtuales deben tener cerrados los puertos de administracion"
+        ManageAzPolicy  "/providers/Microsoft.Authorization/policyDefinitions/22730e10-96f6-4aac-ad84-9383d35b5917" $Description $policyName $scope $displayName "Y"
+        
+        # Management ports of virtual machines should be protected with just-in-time network access control
+        $policyName = "audit-jit-vm"
+        $displayName = "246) Management ports of virtual machines should be protected with just-in-time network access control"
+        $Description = "Para cumplir la linea base de seguridad de Azure las maquinas virtuales deben estar protegidos con JIT"
+        ManageAzPolicy  "/providers/Microsoft.Authorization/policyDefinitions/b0f33259-77d7-4c9e-aac6-3aabcfae693c" $Description $policyName $scope $displayName "Y"
+        
+        # Storage accounts should restrict network access
+        # Effect Deny
+        $policyName = "deny-netaccess-storage"
+        $displayName = "247) Storage accounts should restrict network access"
+        $Description = "Para cumplir la linea base de seguridad de Azure las storage accounts deben restringir el acceso a la red"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/34c877ad-507e-4c82-993e-3452a6e0ad3c" $Description $policyName $scope $displayName "Y" "Deny"
+        
+        # Storage accounts should use customer-managed key for encryption
+        # Effect Audit
+        $policyName = "audit-cmkey-storage"
+        $displayName = "248) Storage accounts should use customer-managed key for encryption"
+        $Description = "Para cumplir la linea base de seguridad de Azure las storage accounts deben tener habilitado el cifrado en reposo con llaves administradas por el cliente"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/6fac406b-40ca-413b-bf8e-0bf964659c25" $Description $policyName $scope $displayName "Y"
+        
+        # Function apps should enable end to end encryption 
+        # Effect DENY
+        $policyName = "deny-e2ecrypt-funcapp"
+        $displayName = "249) Function apps should enable end to end encryption"
+        $Description = "Para cumplir la linea base de seguridad de Azure todas las Azure Functions deben utilizar cifrado end to end"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/387140f1-6da9-4741-bcee-3b5edcdfd9ec" $Description $policyName $scope $displayName "Y" "Deny"
+
+        # App Service apps should require FTPS
+        # Effect AuditIfNotExists
+        $policyName = "audit-ftps-webapp"
+        $displayName = "250) [Evaluation] App Service apps should require FTPS only"
+        $Description = "Para cumplir la linea base de seguridad de Azure ninguna Web App debe usar FTP en los despliegues."
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/4d24b6d4-5e53-4a4f-a7f4-618fa573ee4b" $Description $policyName $scope $displayName "Y"
+
+        # App Service apps should only be accessible over HTTPS
+        # Effect DENY
+        $policyName = "deny-https-webapp"
+        $displayName = "251) [Evaluation] App Service apps should only be accessible over HTTPS only"
+        $Description = "Para cumplir la linea base de seguridad de Azure todas las Web App deben tener habilitado el https only."
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/a4af4a39-4135-47fb-b175-47fbdf85311d" $Description $policyName $scope $displayName "Y" "Deny"
+        
+        # App Service apps should have remote debugging turned off
+        # Effect AuditIfNotExists
+        $policyName = "audit-debug-webapp"
+        $displayName = "252) App Service apps should only be accessible over HTTPS only"
+        $Description = "Para cumplir la linea base de seguridad de Azure todos los function app slot deben tener deshabilitado el debugging remoto."
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/cb510bfd-1cba-4d9f-a230-cb0976f4bb71" $Description $policyName $scope $displayName "Y"
+
+        # App Service apps should use the latest TLS version 
+        # Effect AuditIfNotExists
+        $policyName = "audit-tls13-webapp"
+        $displayName = "253) App Service apps should use the latest TLS version"
+        $Description = "Para cumplir la linea base de seguridad de Azure las Web App no deben soportar versiones obsoletas de TLS"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/f0e6e85b-9b9f-4a4b-b67b-f730d42f1b0b" $Description $policyName $scope $displayName "Y"
+        
+        # App Service apps should not have CORS configured to allow every resource to access your apps
+        # Effect AuditIfNotExists
+        $policyName = "audit-cors-webapp"
+        $displayName = "254) App Service apps should not have CORS configured to allow every resource to access your apps"
+        $Description = "Para cumplir la linea base de seguridad de Azure las Web App no deben permitir el acceso desde todos los dominios CORS."
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/5744710e-cc2f-4ee8-8809-3b11e89f4bc9" $Description $policyName $scope $displayName "Y"
+
+        # App Service apps should have authentication enabled
+        # Effect AuditIfNotExists
+        $policyName = "audit-auth-webapp"
+        $displayName = "255) App Service apps should have authentication enabled"
+        $Description = "Para cumplir la linea base de seguridad de Azure las Web App deben requerir autenticacion."
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/95bccee9-a7f8-4bec-9ee9-62c3473701fc" $Description $policyName $scope $displayName "Y"
+
+        # App Service apps should use the latest TLS version
+        # Effect AuditIfNotExists
+        $policyName = "audit-tls13-webapp"
+        $displayName = "256) App Service apps should use the latest TLS version"
+        $Description = "Para cumplir la linea base de seguridad de Azure las Web App no deben soportar versiones obsoletas de TLS"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/f0e6e85b-9b9f-4a4b-b67b-f730d42f1b0b" $Description $policyName $scope $displayName "Y"
+
+        # App Service apps should not have CORS configured to allow every resource to access your apps
+        # Effect AuditIfNotExists
+        $policyName = "audit-cors-webapp"
+        $displayName = "257) App Service apps should not have CORS configured to allow every resource to access your apps"
+        $Description = "Para cumplir la linea base de seguridad de Azure las Web App no deben permitir el acceso desde todos los dominios CORS."
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/5744710e-cc2f-4ee8-8809-3b11e89f4bc9" $Description $policyName $scope $displayName "Y"
+
+        # App Service apps should have authentication enabled
+        # Effect AuditIfNotExists
+        $policyName = "audit-auth-webapp"
+        $displayName = "258) App Service apps should have authentication enabled"
+        $Description = "Para cumplir la linea base de seguridad de Azure las Web App deben requerir autenticacion."
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/95bccee9-a7f8-4bec-9ee9-62c3473701fc" $Description $policyName $scope $displayName "Y"
+
+        # App Service apps should use latest HTTP Version
+        # Effect AuditIfNotExists
+        $policyName = "audit-httpv-webapp"
+        $displayName = "259) App Service apps should use latest HTTP Version"
+        $Description = "Para cumplir la linea base de seguridad de Azure las Web App deben utilizar unicamente la ultima version de HTTP."
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/8c122334-9d20-4eb8-89ea-ac9a705b74ae" $Description $policyName $scope $displayName "Y"
+
+        # App Service apps should disable public network access
+        # Effect DENY
+        $policyName = "deny-publicaccess-webapp"
+        $displayName = "260) App Service apps should disable public network access"
+        $Description = "Para cumplir la linea base de seguridad de Azure las Web App deben tener deshabilitado el acceso publico."
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/1b5ef780-c53c-4a64-87f3-bb9c8c8094ba" $Description $policyName $scope $displayName "Y" "Deny"
+
+        # App Service apps should enable end to end encryption
+        # Effect DENY
+        $policyName = "deny-e2ecrypt-webapp"
+        $displayName = "261) App Service apps should enable end to end encryption"
+        $Description = "Para cumplir la linea base de seguridad de Azure las Web App deben utilizar cifrado end to end."
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/af1d7e88-c1c8-4ea8-be1f-87bff0df9101" $Description $policyName $scope $displayName "Y" "Deny"
+
+        # Disks and OS image should support TrustedLaunch
+        # Effect Audit
+        $policyName = "audit-imgtrustedlau-vm"
+        $displayName = "262) Disks and OS image should support TrustedLaunch"
+        $Description = "Para cumplir la linea base de seguridad de Azure los las imagenes de disco y de sistema operativo deben soportar TrustedLaunch"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/b03bb370-5249-4ea4-9fce-2552e87e45fa" $Description $policyName $scope $displayName "Y"
+
+        # Function app slots should enable end to end encryption
+        # Effect DENY
+        $policyName = "deny-e2ecrypt-funcappslt"
+        $displayName = "263) Function app slots should enable end to end encryption"
+        $Description = "Para cumplir la linea base de seguridad de Azure las function app slots deben utilizar cifrado end to end."
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/cbe0e5eb-fea9-491d-ab20-a62cf049c5ae" $Description $policyName $scope $displayName "Y" "Deny"
+
+        # App Service app slots should require FTPS only
+        # Effect AuditIfNotExists
+        $policyName = "audit-ftps-webappslt"
+        $displayName = "264) App Service app slots should require FTPS only"
+        $Description = "Para cumplir la linea base de seguridad de Azure ningun web app slot debe usar FTP en los despliegues."
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/c285a320-8830-4665-9cc7-bbd05fc7c5c0" $Description $policyName $scope $displayName "Y"
+
+        # App Service app slots should only be accessible over HTTPS
+        # Effect Audit
+        $policyName = "audit-https-webappslt"
+        $displayName = "265) App Service app slots should only be accessible over HTTPS"
+        $Description = "Para cumplir la linea base de seguridad de Azure los web app slot deben tener habilitado el https only."
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/ae1b9a8c-dfce-4605-bd91-69213b4a26fc" $Description $policyName $scope $displayName "Y"
+
+        # App Service app slots should have remote debugging turned off
+        # Effect AuditIfNotExists
+        $policyName = "audit-debug-webappslt"
+        $displayName = "266) App Service app slots should have remote debugging turned off"
+        $Description = "Para cumplir la linea base de seguridad de Azure los web app slot deben tener deshabilitado el debugging remoto."
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/a08ae1ab-8d1d-422b-a123-df82b307ba61" $Description $policyName $scope $displayName "Y"
+
+        # App Service app slots should use the latest TLS version
+        # Effect AuditIfNotExists
+        $policyName = "audit-tls13-webappslt"
+        $displayName = "267) App Service app slots should use the latest TLS version"
+        $Description = "Para cumplir la linea base de seguridad de Azure los web app slot no deben soportar versiones obsoletas de TLS"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/4ee5b817-627a-435a-8932-116193268172" $Description $policyName $scope $displayName "Y"
+
+        # App Service app slots should not have CORS configured to allow every resource to access your apps
+        # Effect AuditIfNotExists
+        $policyName = "audit-cors-webappslt"
+        $displayName = "268) App Service app slots should not have CORS configured to allow every resource to access your apps"
+        $Description = "Para cumplir la linea base de seguridad de Azure los web app slot no deben permitir el acceso desde todos los dominios CORS."
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/cae7c12e-764b-4c87-841a-fdc6675d196f" $Description $policyName $scope $displayName "Y"
+
+        # App Service app slots should use latest HTTP Version
+        # Effect AuditIfNotExists
+        $policyName = "audit-httpv-webappslt"
+        $displayName = "269) App Service apps should use latest HTTP Version"
+        $Description = "Para cumplir la linea base de seguridad de Azure los web app slot deben utilizar unicamente la ultima version de HTTP."
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/4dcfb8b5-05cd-4090-a931-2ec29057e1fc" $Description $policyName $scope $displayName "Y"
+        
+        # App Service app slots should disable public network access
+        # Effect DENY
+        $policyName = "deny-publicaccess-webappslt"
+        $displayName = "270) App Service app slots should disable public network access"
+        $Description = "Para cumplir la linea base de seguridad de Azure los web app slot deben tener deshabilitado el acceso publico."
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/701a595d-38fb-4a66-ae6d-fb3735217622" $Description $policyName $scope $displayName "Y" "Deny"
+
+        # App Service app slots should enable end to end encryption
+        # Effect DENY
+        $policyName = "deny-e2ecrypt-webappslt"
+        $displayName = "271) App Service app slots should enable end to end encryption"
+        $Description = "Para cumplir la linea base de seguridad de Azure los web app slot deben utilizar cifrado end to end."
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/701a595d-38fb-4a66-ae6d-fb3735217622" $Description $policyName $scope $displayName "Y" "Deny"
+
+        # App Service app slots should enable end to end encryption
+        # Effect DENY
+        $policyName = "deny-e2ecrypt-webappslt"
+        $displayName = "272) App Service app slots should enable end to end encryption"
+        $Description = "Para cumplir la linea base de seguridad de Azure los web app slot deben utilizar cifrado end to end."
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/123aed70-491a-4f07-a569-e1f3a8dd651e" $Description $policyName $scope $displayName "Y" "Deny"
     }
 }
 Catch
