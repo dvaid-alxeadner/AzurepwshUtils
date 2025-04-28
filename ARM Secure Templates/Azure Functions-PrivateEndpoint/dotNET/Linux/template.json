@@ -97,6 +97,7 @@
                 "clientAffinityEnabled": false,
                 "virtualNetworkSubnetId": null,
                 "httpsOnly": true,
+                "endToEndEncryptionEnabled": true,
                 "publicNetworkAccess": "Disabled"
             }
         },
