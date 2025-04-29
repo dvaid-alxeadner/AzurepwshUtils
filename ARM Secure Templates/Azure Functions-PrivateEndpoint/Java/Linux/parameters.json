@@ -3,13 +3,13 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "name": {
-            "value": "azfuncjava20230921",
+            "value": "azfuncjava202504",
             "metadata": {
                 "description": "Function name."
             }
         },
         "hostingPlanName": {
-            "value": "appserviceplan20221222",
+            "value": "appserviceplan202504",
             "metadata": {
                 "description": "Service Plan name."
             }
