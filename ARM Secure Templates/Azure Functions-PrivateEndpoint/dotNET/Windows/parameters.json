@@ -3,13 +3,13 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "name": {
-            "value": "azfuncdotnet20230828",
+            "value": "azfunc202504",
             "metadata": {
                 "description": "Function name."
             }
         },
         "hostingPlanName": {
-            "value": "appserviceplan20230119",
+            "value": "appserviceplan202504",
             "metadata": {
                 "description": "Service Plan name."
             }
@@ -42,7 +42,7 @@
             }
         },
         "privateEndpointName": {
-            "value": "PE_AZFUNCTIONDOTNET",
+            "value": "PE_AZFUNCTION",
             "metadata": {
                 "description": "Private endpoint name."
             }
