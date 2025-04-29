@@ -2,26 +2,14 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "subscriptionId": {
-            "value": "<aabbccdd-ffff-aabb-ccdd-aabbccddeeff>",
-            "metadata": {
-                "description": "id of the Azure Subscription"
-            }
-        },
         "name": {
-            "value": "azfuncpy20230119",
+            "value": "azfuncpy202504",
             "metadata": {
                 "description": "Function name."
             }
         },
-        "location": {
-            "value": "East US 2",
-            "metadata": {
-                "description": "Location of the Azure Function."
-            }
-        },
         "hostingPlanName": {
-            "value": "appservplanlinux",
+            "value": "appserviceplanlinux",
             "metadata": {
                 "description": "Service Plan name."
             }
@@ -39,13 +27,13 @@
             }
         },
         "storageAccountName": {
-            "value": "storagedic22",
+            "value": "<Storage Account>",
             "metadata": {
-                "description": "Storage account name"
+                "description": "Storage account name for the function"
             }
         },
         "use32BitWorkerProcess": {
-            "value": false
+            "value": true
         },
         "linuxFxVersion": {
             "value": "Python|3.9",
