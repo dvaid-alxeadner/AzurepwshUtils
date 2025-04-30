@@ -2,26 +2,14 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "subscriptionId": {
-            "value": "<aabbccdd-ffff-aabb-ccdd-aabbccddeeff>",
-            "metadata": {
-                "description": "id of the Azure Subscription"
-            }
-        },
         "name": {
-            "value": "azfuncpwsh20230119",
+            "value": "azfuncpwshlin202504",
             "metadata": {
                 "description": "Function name."
             }
         },
-        "location": {
-            "value": "East US 2",
-            "metadata": {
-                "description": "Location of the Azure Function."
-            }
-        },
         "hostingPlanName": {
-            "value": "appservplanlinux",
+            "value": "appserviceplanlinux",
             "metadata": {
                 "description": "Service Plan name."
             }
@@ -39,7 +27,7 @@
             }
         },
         "storageAccountName": {
-            "value": "storagedic22",
+            "value": "<Storage Account>",
             "metadata": {
                 "description": "Storage account name"
             }
@@ -54,7 +42,7 @@
             }
         },
         "privateEndpointName": {
-            "value": "PE_AZFUNCTIONPWSH",
+            "value": "PE_AZFUNCTIONPWSHLINUX",
             "metadata": {
                 "description": "Private endpoint name."
             }
