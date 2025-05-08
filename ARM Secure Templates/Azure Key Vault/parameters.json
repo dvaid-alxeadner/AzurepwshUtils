@@ -2,34 +2,10 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "tenant": {
-            "value": "<aabbccdd-ffff-aabb-ccdd-aabbccddeeff>",
-            "metadata":{
-                "description": "id of the Tenant"
-            }
-        },
-        "subscriptionId": {
-            "value": "<aabbccdd-ffff-aabb-ccdd-aabbccddeeff>",
-            "metadata": {
-                "description": "id of the Azure Subscription"
-            }
-        },
-        "resourceGroup":{
-            "value": "<Resource Group>",
-            "metadata":{
-                "description": "Resource group name."
-            }
-        },
         "name": {
-            "value": "keyvault20230301",
+            "value": "keyvault202505",
             "metadata": {
                 "description": "Key Vault name."
-            }
-        },
-        "location": {
-            "value": "eastus2",
-            "metadata": {
-                "description": "Location of the Key Vault."
             }
         },
         "sku": {
@@ -38,9 +14,6 @@
                 "description": "Stock Keeping Unit (Standard/Premium)."
             }
         },
-        "accessPolicies": {
-            "value": []
-        },
         "enabledForDeployment": {
             "value": false
         },
@@ -48,9 +21,6 @@
             "value": false
         },
         "enabledForDiskEncryption": {
-            "value": false
-        },
-        "enableRbacAuthorization": {
             "value": false
         },
         "softDeleteRetentionInDays": {

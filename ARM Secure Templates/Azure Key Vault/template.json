@@ -2,26 +2,11 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "tenant": {
-            "type": "string"
-        },
-        "subscriptionId": {
-            "type": "string"
-        },
-        "resourceGroup":{
-            "type": "string"
-        },
         "name": {
-            "type": "string"
-        },
-        "location": {
             "type": "string"
         },
         "sku": {
             "type": "string"
-        },
-        "accessPolicies": {
-            "type": "array"
         },
         "enabledForDeployment": {
             "type": "bool"
@@ -30,9 +15,6 @@
             "type": "bool"
         },
         "enabledForDiskEncryption": {
-            "type": "bool"
-        },
-        "enableRbacAuthorization": {
             "type": "bool"
         },
         "softDeleteRetentionInDays": {
@@ -64,15 +46,15 @@
         {
             "apiVersion": "2021-10-01",
             "name": "[parameters('name')]",
-            "location": "[parameters('location')]",
+            "location": "[resourceGroup().location]",
             "type": "Microsoft.KeyVault/vaults",
             "properties": {
                 "enabledForDeployment": "[parameters('enabledForDeployment')]",
                 "enabledForTemplateDeployment": "[parameters('enabledForTemplateDeployment')]",
                 "enabledForDiskEncryption": "[parameters('enabledForDiskEncryption')]",
-                "enableRbacAuthorization": "[parameters('enableRbacAuthorization')]",
-                "accessPolicies": "[parameters('accessPolicies')]",
-                "tenantId": "[parameters('tenant')]",
+                "accessPolicies": [],
+                "enableRbacAuthorization": true,
+                "tenantId": "[concat(subscription().subscriptionId,'')]",
                 "sku": {
                     "name": "[parameters('sku')]",
                     "family": "A"
@@ -90,7 +72,7 @@
             "dependsOn": []
         },
         {
-            "location": "[parameters('location')]",
+            "location": "[resourceGroup().location]",
             "name": "[parameters('privateEndpointName')]",
             "type": "Microsoft.Network/privateEndpoints",
             "apiVersion": "2021-05-01",
@@ -103,7 +85,7 @@
                     {
                         "name": "[parameters('privateEndpointName')]",
                         "properties": {
-                            "privateLinkServiceId": "[concat('/subscriptions/',parameters('subscriptionId'),'/resourcegroups/',parameters('resourceGroup'),'/providers/Microsoft.KeyVault/vaults/',parameters('name'))]",
+                            "privateLinkServiceId": "[concat('/subscriptions/',subscription().subscriptionId,'/resourcegroups/',resourceGroup().name,'/providers/Microsoft.KeyVault/vaults/',parameters('name'))]",
                             "groupIds": "[parameters('targetSubResource')]"
                         }
                     }
