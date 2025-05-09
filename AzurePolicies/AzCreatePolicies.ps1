@@ -2102,6 +2102,28 @@ try {
         $displayName = "272) App Service app slots should enable end to end encryption"
         $Description = "Para cumplir la linea base de seguridad de Azure los web app slot deben utilizar cifrado end to end."
         ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/123aed70-491a-4f07-a569-e1f3a8dd651e" $Description $policyName $scope $displayName "Y" "Deny"
+
+        # Keys using RSA cryptography should have a specified minimum key size
+        # Effect DENY
+        $minlen=4096
+        $policyName = "deny-keysize4096-kv"
+        $displayName = "273) Keys using RSA cryptography should have a specified minimum key size"
+        $Description = "Para cumplir la linea base de seguridad de Azure las llaves RSA deben tener un tamaño minimo de 4096 bytes"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/82067dbb-e53b-4e06-b631-546d197452d9" $Description $policyName $scope $displayName $null "Deny" $minlen "minimumRSAKeySize"
+        
+        # Keys should have the specified maximum validity period
+        # Effect DENY
+        $maxdays=365
+        $policyName = "deny-keyexpiration-kv"
+        $displayName = "274) Keys should have the specified maximum validity period"
+        $Description = "Para cumplir la linea base de seguridad de Azure las llaves en keyvault deben tener una expiracion maxima de 365 dias"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/49a22571-d204-4c91-a7b6-09b1a586fbc9" $Description $policyName $scope $displayName $null "Deny" $maxdays "maximumValidityInDays"
+        
+        # Azure Key Vault should use RBAC permission model DENY
+        $policyName = "deny-rbac-kv"
+        $displayName = "275) Azure Key Vault should use RBAC permission model"
+        $Description = "Para cumplir la linea base de seguridad de Azure los keyvault deben utilizar el esquema de permisos bajo Azure RBAC"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/12d4fa5e-1f9f-4c21-97a9-b99b3c6611b5" $Description $policyName $scope $displayName "Y" "Deny"
     }
 }
 Catch
