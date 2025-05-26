@@ -2,29 +2,11 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "subscriptionId": {
-            "value": "<aabbccdd-ffff-aabb-ccdd-aabbccddeeff>",
-            "metadata": {
-                "description": "id of the Azure Subscription"
-            }
-        },
-        "resourceGroup":{
-            "value": "<Resource Group>",
-            "metadata":{
-                "description": "Resource group name."
-            }
-        },
         "name": {
-        "value": "datafactory20230126",
-        "metadata": {
-            "description": "Data factory name"
-        }
-        },
-        "location": {
-            "value": "East US 2",
+            "value": "datafactory202505",
             "metadata": {
-                "description": "Location of the data factory."
-            }
+                "description": "Data factory name"
+             }
         },
         "privateEndpointName": {
             "value": "PE_DTFY",
@@ -52,7 +34,7 @@
         },
         "oi_tag":
         {
-            "value":"10000111",
+            "value": "10000111",
             "metadata": {
                 "description": "Tag for budget classification"
             }
