@@ -190,13 +190,13 @@ try {
         $Description = "Para cumplir la linea base de seguridad de Azure todas las cuentas de storage deben tener deshabilitado el acceso publico."
         ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/4fa4b6c0-31ca-4c0d-b10d-24b96f62a751" $Description $policyName $scope $displayName "Y" "Deny"
 
-        # Azure Defender for Storage should be enabled 
-        # Effect AuditIFNotExists
-        $policyName = "audit-azdf-strg"
-        $displayName = "2) Azure Defender for Storage should be enabled"
-        $Description = "Para cumplir la linea base de seguridad de Azure las cuentas de storage deben tener habilitado el Azure Defender."
-        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/308fbb08-4ab8-4e67-9b29-592e93fb94fa" $Description $policyName $scope $displayName "Y" 
-
+        # Microsoft Defender for Storage should be enabled
+        # Effect AuditIfNotExists
+        $policyName = "audit-mdfs-strg"
+        $displayName = "2) Microsoft Defender for Storage should be enabled"
+        $Description = "Para cumplir la linea base de seguridad de Azure las cuentas de storage deben tener habilitado el Microsoft Defender."
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/640d2586-54d2-465f-877f-9ffc1d2109f4" $Description $policyName $scope $displayName "Y" 
+        
         # Secure transfer to storage accounts should be enabled 
         # Effect Audit
         $policyName = "deny-sectransf-strg"
@@ -478,21 +478,21 @@ try {
         $displayName = "42) Transparent Data Encryption on SQL databases should be enabled"
         $Description = "Para cumplir la linea base de seguridad de Azure todas las bases de datos Azure SQL deben tener habilitado TDE (Transparent Data Encryption)."
         ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/17k78e20-9358-41c9-923c-fb736d382a12" $Description $policyName $scope $displayName "Y"
-
-        # Azure SQL Database should have Azure Active Directory Only Authentication
+        
+        # Azure SQL Database should have Microsoft Entra-only authentication enabled
         # Effect DENY
         $policyName = "deny-aadauth-asql"
-        $displayName = "43) Azure SQL Database should have Azure Active Directory Only Authentication"
-        $Description = "Para cumplir la linea base de seguridad de Azure las bases de datos Azure SQL deben implementar Autenticacion de Azure Active Directory."
-        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/abda6d70-9778-44e7-84a8-06713e6db027" $Description $policyName $scope $displayName "Y" "Deny"
-
-        # Azure SQL Managed Instance should have Azure Active Directory Only Authentication
+        $displayName = "43) Azure SQL Database should have Microsoft Entra-only authentication enabled"
+        $Description = "Para cumplir la linea base de seguridad de Azure las bases de datos Azure SQL deben implementar Autenticacion de Microsoft Entra ID."
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/b3a22bc9-66de-45fb-98fa-00f5df42f41a" $Description $policyName $scope $displayName "Y" "Deny"
+        
+        # Azure SQL Managed Instance should have Microsoft Entra-only authentication enabled
         # Effect DENY
         $policyName = "deny-aadauth-asqlmi"
-        $displayName = "44) Azure SQL Managed Instance should have Azure Active Directory Only Authentication"
-        $Description = "Para cumplir la linea base de seguridad de Azure las bases de datos Azure SQL Managed deben implementar Autenticacion de Azure Active Directory."
-        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/78215662-041e-49ed-a9dd-5385911b3a1f" $Description $policyName $scope $displayName "Y" "Deny"
-
+        $displayName = "44) Azure SQL Managed Instance should have Microsoft Entra-only authentication enabled"
+        $Description = "Para cumplir la linea base de seguridad de Azure las bases de datos Azure SQL Managed deben implementar Autenticacion de Microsoft Entra ID"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/0c28c3fb-c244-42d5-a9bf-f35f2999577b" $Description $policyName $scope $displayName "Y" "Deny"
+        
         # Public network access on Azure SQL Database should be disabled
         # Effect DENY
         $policyName = "deny-publicaccess-asql"
@@ -2124,6 +2124,13 @@ try {
         $displayName = "275) Azure Key Vault should use RBAC permission model"
         $Description = "Para cumplir la linea base de seguridad de Azure los keyvault deben utilizar el esquema de permisos bajo Azure RBAC"
         ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/12d4fa5e-1f9f-4c21-97a9-b99b3c6611b5" $Description $policyName $scope $displayName "Y" "Deny"
+
+        # Azure data factories should be encrypted with a customer-managed key
+        # Effect DENY
+        $policyName = "deny-cmkey-dtfy"
+        $displayName = "276) Azure data factories should be encrypted with a customer-managed key"
+        $Description = "Para cumplir la linea base de seguridad de Azure los Data Factory deben tener habilitado el cifrado en reposo con llaves administradas por XM."
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/4ec52d6d-beb7-40c4-9a9e-fe753254690e" $Description $policyName $scope $displayName "Y" "Deny"
     }
 }
 Catch
