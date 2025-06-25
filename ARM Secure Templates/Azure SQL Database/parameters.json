@@ -2,32 +2,14 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "subscriptionId": {
-            "value": "<aabbccdd-ffff-aabb-ccdd-aabbccddeeff>",
-            "metadata": {
-                "description": "id of the Azure Subscription"
-            }
-        },
-        "resourceGroup":{
-            "value": "<Resource Group>",
-            "metadata":{
-                "description": "Resource group name."
-            }
-        },
-        "location": {
-            "value": "eastus2",
-            "metadata": {
-                "description": "Location of the cache for redis."
-            }
-        },
         "serverName": {
-            "value": "sqlserver20230302",
+            "value": "sqlserver202506",
             "metadata": {
                 "description": "Server name."
             }
         },
         "databaseName": {
-            "value": "sqldb20230302",
+            "value": "sqldb202506",
             "metadata": {
                 "description": "Database name."
             }
@@ -98,7 +80,7 @@
         "administrators": {
             "value": {
                 "administratorType": "activeDirectory",
-                "login": "<upn@domain>",
+                "login": "CONTOSO@MICROSOFT.NET",
                 "sid": "<aabbccdd-ffff-aabb-ccdd-aabbccddeeff>",
                 "tenantId": "<aabbccdd-ffff-aabb-ccdd-aabbccddeeff>",
                 "azureADOnlyAuthentication": true,

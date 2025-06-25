@@ -2,15 +2,6 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "subscriptionId": {
-            "type": "string"
-        },
-        "resourceGroup":{
-            "type": "string"
-        },
-        "location": {
-            "type": "string"
-        },
         "serverName": {
             "type": "string"
         },
@@ -76,7 +67,7 @@
         {
             "apiVersion": "2021-05-01-preview",
             "type": "Microsoft.Sql/servers",
-            "location": "[parameters('location')]",
+            "location": "[resourceGroup().location]",
             "tags": {
                 "AMBIENTE": "[parameters('environment_tag')]",
                 "OI": "[parameters('oi_tag')]"
@@ -95,9 +86,12 @@
                     "dependsOn": [
                         "[concat('Microsoft.Sql/servers/', parameters('serverName'))]"
                     ],
-                    "location": "[parameters('location')]",
+                    "location": "[resourceGroup().location]",
                     "tags": {},
                     "name": "[parameters('databaseName')]",
+                    "identity": {
+                        "type": "SystemAssigned"
+                    },
                     "properties": {
                         "collation": "[parameters('collation')]",
                         "maxSizeBytes": "[parameters('maxSizeBytes')]",
@@ -108,7 +102,7 @@
                         "autoPauseDelay": "[parameters('autoPauseDelay')]",
                         "requestedBackupStorageRedundancy": "[parameters('requestedBackupStorageRedundancy')]",
                         "isLedgerOn": false,
-                        "maintenanceConfigurationId": "[concat('/subscriptions/',parameters('subscriptionId'),'/providers/Microsoft.Maintenance/publicMaintenanceConfigurations/SQL_Default')]"
+                        "maintenanceConfigurationId": "[concat('/subscriptions/',subscription().subscriptionId,'/providers/Microsoft.Maintenance/publicMaintenanceConfigurations/SQL_Default')]"
                     },
                     "sku": {
                         "name": "[parameters('skuName')]",
@@ -121,7 +115,7 @@
                     "dependsOn": [
                         "[concat('Microsoft.Sql/servers/', parameters('serverName'))]"
                     ],
-                    "location": "[parameters('location')]",
+                    "location": "[resourceGroup().location]",
                     "name": "Default",
                     "properties": {
                         "connectionType": "[parameters('connectionType')]"
@@ -131,7 +125,7 @@
             ]
         },
         {
-            "location": "[parameters('location')]",
+            "location": "[resourceGroup().location]",
             "name": "[parameters('privateEndpointName')]",
             "type": "Microsoft.Network/privateEndpoints",
             "apiVersion": "2021-05-01",
@@ -144,7 +138,7 @@
                     {
                         "name": "[parameters('privateEndpointName')]",
                         "properties": {
-                            "privateLinkServiceId": "[concat('/subscriptions/',parameters('subscriptionId'),'/resourcegroups/',parameters('resourceGroup'),'/providers/Microsoft.Sql/servers/',parameters('serverName'))]",
+                            "privateLinkServiceId": "[concat('/subscriptions/',subscription().subscriptionId,'/resourcegroups/',resourceGroup().name,'/providers/Microsoft.Sql/servers/',parameters('serverName'))]",
                             "groupIds": "[parameters('targetSubResource')]"
                         }
                     }
