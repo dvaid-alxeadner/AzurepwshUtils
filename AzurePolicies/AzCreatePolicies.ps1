@@ -2129,8 +2129,29 @@ try {
         # Effect DENY
         $policyName = "deny-cmkey-dtfy"
         $displayName = "276) Azure data factories should be encrypted with a customer-managed key"
-        $Description = "Para cumplir la linea base de seguridad de Azure los Data Factory deben tener habilitado el cifrado en reposo con llaves administradas por XM."
+        $Description = "Para cumplir la linea base de seguridad de Azure los Data Factory deben tener habilitado el cifrado en reposo con llaves administradas por el cliente"
         ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/4ec52d6d-beb7-40c4-9a9e-fe753254690e" $Description $policyName $scope $displayName "Y" "Deny"
+
+        # Azure Defender for SQL should be enabled for unprotected Azure SQL servers
+        # Effect AuditIfNotExists
+        $policyName = "audit-mdfcunptrctd-asql"
+        $displayName = "277) Azure Defender for SQL should be enabled for unprotected Azure SQL servers"
+        $Description = "Para cumplir la linea base de seguridad de Azure los servidores SQL destrotegidos deben tener habilitado el Microsoft Defender for SQL"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/abfb4388-5bf4-4ad7-ba82-2cd2f41ceae9" $Description $policyName $scope $displayName "Y"
+        
+        # SQL servers should use customer-managed keys to encrypt data at rest
+        # Effect DENY
+        $policyName = "deny-cmkey-asql"
+        $displayName = "278) SQL servers should use customer-managed keys to encrypt data at rest"
+        $Description = "Para cumplir la linea base de seguridad de Azure los servidores SQL deben tener habilitado el cifrado en reposo con llaves administradas por el cliente"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/0a370ff3-6cab-4e85-8995-295fd854c5b8" $Description $policyName $scope $displayName "Y" "Deny"
+        
+        # SQL managed instances should use customer-managed keys to encrypt data at rest
+        # Effect DENY
+        $policyName = "deny-cmkey-asqlmi"
+        $displayName = "279) SQL managed instances should use customer-managed keys to encrypt data at rest"
+        $Description = "Para cumplir la linea base de seguridad de Azure los servidores SQL Managed deben tener habilitado el cifrado en reposo con llaves administradas por el cliente"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/ac01ad65-10e5-46df-bdd9-6b0cad13e1d2" $Description $policyName $scope $displayName "Y" "Deny"
     }
 }
 Catch
