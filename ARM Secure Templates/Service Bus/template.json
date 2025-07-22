@@ -2,17 +2,8 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "subscriptionId": {
-            "type": "string"
-        },
-        "resourceGroup": {
-            "type": "string"
-        },
-        "location": {
-            "type": "string"
-        },
         "servicebusname": {
-            "type": "String"
+            "type": "string"
         },
         "privateEndpointName": {
             "type": "string"
@@ -36,9 +27,9 @@
     "resources": [
         {
             "type": "Microsoft.ServiceBus/namespaces",
-            "apiVersion": "2022-10-01-preview",
+            "apiVersion": "2024-01-01",
             "name": "[parameters('servicebusname')]",
-            "location": "[parameters('location')]",
+            "location": "[resourceGroup().location]",
             "tags": {
                 "AMBIENTE": "[parameters('environment_tag')]",
                 "OI": "[parameters('oi_tag')]"
@@ -58,9 +49,9 @@
         },
         {
             "type": "Microsoft.ServiceBus/namespaces/authorizationrules",
-            "apiVersion": "2022-10-01-preview",
+            "apiVersion": "2024-01-01",
             "name": "[concat(parameters('servicebusname'), '/RootManageSharedAccessKey')]",
-            "location": "[parameters('location')]",
+            "location": "[resourceGroup().location]",
             "dependsOn": [
                 "[resourceId('Microsoft.ServiceBus/namespaces', parameters('servicebusname'))]"
             ],
@@ -73,7 +64,7 @@
             }
         },
         {
-        "location": "[parameters('location')]",
+        "location": "[resourceGroup().location]",
         "name": "[parameters('privateEndpointName')]",
         "type": "Microsoft.Network/privateEndpoints",
         "apiVersion": "2021-05-01",
@@ -86,7 +77,7 @@
                 {
                     "name": "[parameters('privateEndpointName')]",
                     "properties": {
-                        "privateLinkServiceId": "[concat('/subscriptions/',parameters('subscriptionId'),'/resourcegroups/',parameters('resourceGroup'),'/providers/Microsoft.ServiceBus/namespaces/',parameters('servicebusname'))]",
+                        "privateLinkServiceId": "[concat('/subscriptions/',subscription().subscriptionId,'/resourcegroups/',resourceGroup().name,'/providers/Microsoft.ServiceBus/namespaces/',parameters('servicebusname'))]",
                         "groupIds": "[parameters('targetSubResource')]"
                     }
                 }
