@@ -1,0 +1,76 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "accountname": {
+            "type": "string"
+        },
+        "privateEndpointName": {
+            "type": "string"
+        },
+        "targetSubResource": {
+            "type": "array"
+        },
+        "subnet": {
+            "type": "string"
+        },
+        "environment_tag":
+        {
+            "type": "string"
+        },
+        "oi_tag":
+        {
+            "type": "string"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Automation/automationAccounts",
+            "apiVersion": "2024-10-23",
+            "name": "[parameters('accountname')]",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "AMBIENTE": "[parameters('environment_tag')]",
+                "OI": "[parameters('oi_tag')]"
+            },
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "properties": {
+                "publicNetworkAccess": false,
+                "disableLocalAuth": true,
+                "sku": {
+                    "name": "Free"
+                },
+                "encryption": {
+                    "keySource": "Microsoft.Automation",
+                    "identity": {}
+                }
+            }
+        },        
+        {   
+            "location": "[resourceGroup().location]",
+            "name": "[parameters('privateEndpointName')]",
+            "type": "Microsoft.Network/privateEndpoints",
+            "apiVersion": "2021-05-01",
+            "properties": {
+                "subnet": {
+                    "id": "[parameters('subnet')]"
+                },
+            "customNetworkInterfaceName":  "[concat(parameters('privateEndpointName'),'-nic')]",
+            "privateLinkServiceConnections": [
+                {
+                    "name": "[parameters('privateEndpointName')]",
+                    "properties": {
+                        "privateLinkServiceId": "[concat('/subscriptions/',subscription().subscriptionId,'/resourcegroups/',resourceGroup().name,'/providers/Microsoft.Automation/automationAccounts/',parameters('accountname'))]",
+                        "groupIds": "[parameters('targetSubResource')]"
+                    }
+                }
+            ]
+            },
+            "tags": {},
+            "dependsOn": ["[concat('Microsoft.Automation/automationAccounts/', parameters('accountname'))]"]
+        }
+    ]
+}
