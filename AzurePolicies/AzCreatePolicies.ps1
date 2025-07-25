@@ -2152,6 +2152,64 @@ try {
         $displayName = "279) SQL managed instances should use customer-managed keys to encrypt data at rest"
         $Description = "Para cumplir la linea base de seguridad de Azure los servidores SQL Managed deben tener habilitado el cifrado en reposo con llaves administradas por el cliente"
         ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/ac01ad65-10e5-46df-bdd9-6b0cad13e1d2" $Description $policyName $scope $displayName "Y" "Deny"
+
+        # Service Bus Premium namespaces should use a customer-managed key for encryption
+        # Effect Audit
+        $policyName = "audit-cmkey-sbus"
+        $displayName = "280) Service Bus Premium namespaces should use a customer-managed key for encryption"
+        $Description = "Para cumplir la linea base de seguridad de Azure los service bus premium deben tener habilitado el cifrado en reposo con llaves administradas por el cliente"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/295fc8b1-dc9f-4f53-9c61-3f313ceab40a" $Description $policyName $scope $displayName "Y"
+
+        # Kubernetes cluster services should listen only on allowed ports 
+        # Effect DENY
+        $policyName = "deny-allwdports-aks"
+        $ports=443
+        $displayName = "281) Kubernetes cluster services should listen only on allowed ports"
+        $Description = "Para cumplir la linea base de seguridad de Azure los servicios de Azure Kubernetes solo deben escuchar en puertos previamente aprobados"
+        $arrports =@($ports)
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/233a2a17-77ca-4fb1-9b6b-69223d272a44" $Description $policyName $scope $displayName $null "Audit" $arrports "allowedServicePortsList"    
+
+        # Automation Account should have Managed Identity
+        # Effect Audit
+        $policyName = "audit-mngid-aac"
+        $displayName = "282) Automation Account should have Managed Identity"
+        $Description = "Para cumplir la linea base de seguridad de Azure las Azure Automation Accounts deben usar managed identities"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/dea83a72-443c-4292-83d5-54a2f98749c0" $Description $policyName $scope $displayName "Y"
+        
+        # Automation accounts should disable public network access
+        # Effect DENY
+        $policyName = "deny-pubaccess-aac"
+        $displayName = "283) Automation accounts should disable public network access"
+        $Description = "Para cumplir la linea base de seguridad de Azure las Azure Automation Accounts deben tener deshabilitado el acceso publico"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/955a914f-bf86-4f0e-acd5-e0766b0efcb6" $Description $policyName $scope $displayName "Y" "Deny"
+
+        # Azure Automation accounts should use customer-managed keys to encrypt data at rest
+        # Effect DENY
+        $policyName = "deny-cmkey-aac"
+        $displayName = "284) Azure Automation accounts should use customer-managed keys to encrypt data at rest"
+        $Description = "Para cumplir la linea base de seguridad de Azure las Azure Automation Accounts deben tener habilitado el cifrado en reposo con llaves administradas por el cliente"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/56a5ee18-2ae6-4810-86f7-18e39ce5629b" $Description $policyName $scope $displayName "Y" "Deny"
+
+        # Azure Automation account should have local authentication method disabled
+        # Effect DENY
+        $policyName = "deny-dlocalauth-aac"
+        $displayName = "285) Azure Automation account should have local authentication method disabled"
+        $Description = "Para cumplir la linea base de seguridad de Azure las Azure Automation Accounts deben tener deshabilitada la autenticacion local y en su lugar se deben usar identidades de Microsoft Entra ID"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/48c5f1cb-14ad-4797-8e3b-f78ab3f8d700" $Description $policyName $scope $displayName "Y" "Deny"
+
+        # Automation account variables should be encrypted
+        # EFfect DENY
+        $policyName = "deny-varenc-aac"
+        $displayName = "286) Automation account variables should be encrypted"
+        $Description = "Para cumplir la linea base de seguridad de Azure las Azure Automation Accounts deben cifrar sus variables para mantener la confidencialidad"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/3657f5a0-770e-44a3-b44e-9431ba1e9735" $Description $policyName $scope $displayName "Y" "Deny"
+
+        # Private endpoint connections on Automation Accounts should be enabled
+        # Effect AuditIfNotExists
+        $policyName = "audit-pendpoint-aac"
+        $displayName = "273) Private endpoint connections on Automation Accounts should be enabled"
+        $Description = "Para cumplir la linea base de seguridad de Azure las Azure Automation Accounts deben estar conectadas a una VNET"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/0c2b3618-68a8-4034-a150-ff4abc873462" $Description $policyName $scope $displayName "Y" "AuditIfNotExists"
     }
 }
 Catch
