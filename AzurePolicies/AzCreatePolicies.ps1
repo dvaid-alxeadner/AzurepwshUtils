@@ -2207,9 +2207,37 @@ try {
         # Private endpoint connections on Automation Accounts should be enabled
         # Effect AuditIfNotExists
         $policyName = "audit-pendpoint-aac"
-        $displayName = "273) Private endpoint connections on Automation Accounts should be enabled"
+        $displayName = "287) Private endpoint connections on Automation Accounts should be enabled"
         $Description = "Para cumplir la linea base de seguridad de Azure las Azure Automation Accounts deben estar conectadas a una VNET"
         ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/0c2b3618-68a8-4034-a150-ff4abc873462" $Description $policyName $scope $displayName "Y" "AuditIfNotExists"
+
+        # Azure AI Search services should disable public network access
+        # Effect DENY
+        $policyName = "deny-pubaccess-aisrvsrch"
+        $displayName = "288) Azure AI Search services should disable public network access"
+        $Description = "Para cumplir la linea base de seguridad de Azure las Azure AI search deben tener deshabilitado el acceso publico."
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/ee980b6d-0eca-4501-8d54-f6290fd512c3" $Description $policyName $scope $displayName "Y" "Deny"
+
+        # Azure AI Search services should have local authentication methods disabled
+        # Effect DENY
+        $policyName = "deny-localauth-aisrvsrch"
+        $displayName = "289) Azure AI Search services should have local authentication methods disabled"
+        $Description = "Para cumplir la linea base de seguridad de Azure las Azure AI search deben tener deshabilitada la autenticacion local y en su lugar se debe realizar mediante Microsoft Entra ID"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/6300012e-e9a4-4649-b41f-a85f5c43be91" $Description $policyName $scope $displayName "Y" "Deny"
+
+        # Azure AI Services resources should restrict network access
+        # Effect DENY
+        $policyName = "deny-netaccess-aisrvsrch"
+        $displayName = "290) Azure AI Services resources should restrict network access"
+        $Description = "Para cumplir la linea base de seguridad de Azure las Azure AI search deben deben restringir el acceso a la red"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/ee980b6d-0eca-4501-8d54-f6290fd512c3" $Description $policyName $scope $displayName "Y" "Deny"
+
+        # Azure Cosmos DB accounts should use customer-managed keys to encrypt data at rest
+        # Effect DENY
+        $policyName = "deny-cmkey-cosmos"
+        $displayName = "291) Azure Cosmos DB accounts should use customer-managed keys to encrypt data at rest"
+        $Description = "Para cumplir la linea base de seguridad de Azure las Cosmos DB deben tener habilitado el cifrado en reposo con llaves administradas por el cliente"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/1f905d99-2ab7-462c-a6b0-f709acca6c8f" $Description $policyName $scope $displayName "Y" "Deny"
     }
 }
 Catch
@@ -2218,3 +2246,4 @@ Catch
     Write-Host "Error please report in https://github.com/dvaid-alxeadner/AzurepwshUtils"
     exit 
 }
+
