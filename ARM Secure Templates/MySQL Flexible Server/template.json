@@ -1,0 +1,131 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2014-04-01-preview/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "name": {
+            "type": "string"
+        },
+        "subnet": {
+            "type": "string"
+        },
+        "userAssignedIdentities_externalid": 
+        {
+            "type": "string"
+        },
+        "sku": {
+            "type": "string"
+        },
+        "tier": {
+            "type": "string"
+        },
+        "administratormail":{
+            "type": "string"
+        },
+        "adminpassword": {
+            "type": "securestring"
+        },
+        "administratorobjectid":{
+            "type": "string"
+        },
+        "storageGB": {
+            "type": "int"
+        },
+        "iops": {
+            "type": "int"
+        },
+        "administratorIP":{
+            "type": "string"
+        },
+        "environment_tag":
+        {
+            "type": "string"
+        },
+        "oi_tag":
+        {
+            "type": "string"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.DBforMySQL/flexibleServers",
+            "apiVersion": "2024-12-30",
+            "name": "[parameters('name')]",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "AMBIENTE": "[parameters('environment_tag')]",
+                "OI": "[parameters('oi_tag')]"
+            },
+            "sku": {
+                "name": "[parameters('sku')]",
+                "tier": "[parameters('tier')]"
+            },
+            "identity": {
+                "type": "UserAssigned",
+                "userAssignedIdentities": {
+                    "[parameters('userAssignedIdentities_externalid')]": {}
+                }
+            },
+            "properties": {
+                "administratorlogin": "mysqladmin",
+                "administratorLoginPassword": "[parameters('adminpassword')]",
+                "storage": {
+                    "storageSizeGB": "[parameters('storageGB')]",
+                    "iops": "[parameters('iops')]",
+                    "autoGrow": "Disabled",
+                    "autoIoScaling": "Disabled",
+                    "logOnDisk": "Disabled"
+                },
+                "version": "8.0.21",
+                "availabilityZone": "2",
+                "maintenanceWindow": {
+                    "customWindow": "Disabled",
+                    "dayOfWeek": 0,
+                    "startHour": 0,
+                    "startMinute": 0
+                },
+                "replicationRole": "None",
+                "network": {
+                    "publicNetworkAccess": "Disabled",
+                    "delegatedSubnetResourceId": "[parameters('subnet')]"
+                },
+                "backup": {
+                    "backupRetentionDays": 1,
+                    "geoRedundantBackup": "Disabled"
+                },
+                "highAvailability": {
+                    "mode": "Disabled"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.DBforMySQL/flexibleServers/administrators",
+            "apiVersion": "2024-12-30",
+            "name": "[concat(parameters('name'),'/ActiveDirectory')]",
+            "properties": {
+                "administratorType": "ActiveDirectory",
+                "identityResourceId": "[parameters('userAssignedIdentities_externalid')]",
+                "login": "[parameters('administratormail')]",
+                "sid": "[parameters('administratorobjectid')]",
+                "tenantId": "[subscription().tenantId]", 
+                "identityResourceId": "[parameters('userAssignedIdentities_externalid')]"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/flexibleServers', parameters('name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.DBforMySQL/flexibleServers/configurations",
+            "apiVersion": "2023-06-30",
+            "name": "[concat(parameters('name'), '/activate_all_roles_on_login')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/flexibleServers', parameters('name'))]"
+            ],
+            "properties": {
+                "value": "ON",
+                "currentValue": "ON",
+                "source": "system-default"
+            }
+        }
+    ]
+}
