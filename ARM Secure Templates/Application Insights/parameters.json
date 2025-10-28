@@ -1,0 +1,38 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "name": {
+            "value": "appi-202510",
+            "metadata": {
+                "description": "Application insights name."
+            }
+        },
+        "workspace_externalid": {
+            "value": "/subscriptions/<SubscriptionID>/resourcegroups/<ResourceGroupName>/providers/microsoft.operationalinsights/workspaces/<Log Analytics Workspace Name>",
+            "metadata": {
+                "description": "ID for the Log Analytics Workspace"
+            }
+        },
+        "retentionday": {
+            "value": 30,
+            "metadata": {
+                "description": "Number of days for retention"
+            }
+        },
+        "environment_tag":
+        {
+            "value":"TEST",
+            "metadata": {
+                "description": "Tag to describe the enviroment"
+            }
+        },
+        "oi_tag":
+        {
+            "value":"10000111",
+            "metadata": {
+                "description": "Tag for budget classification"
+            }
+        }
+    }
+}
