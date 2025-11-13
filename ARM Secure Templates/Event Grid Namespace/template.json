@@ -1,0 +1,80 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "namespace_name": {
+            "type": "string"
+        },
+        "privateEndpointName": 
+        {
+            "type": "string"
+        },
+        "targetSubResource": 
+        {
+            "type": "array"
+        },
+        "subnet": {
+            "type": "string"
+        },
+        "environment_tag":
+        {
+            "type": "string"
+        },
+        "oi_tag":
+        {
+            "type": "string"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.EventGrid/namespaces",
+            "apiVersion": "2025-02-15",
+            "name": "[parameters('namespace_name')]",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "AMBIENTE": "[parameters('environment_tag')]",
+                "OI": "[parameters('oi_tag')]"
+            },
+            "sku": {
+                "name": "Standard",
+                "capacity": 1
+            },
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "properties": {
+                "topicsConfiguration": {},
+                "publicNetworkAccess": "Disabled",
+                "isZoneRedundant": true,
+                "disableLocalAuth": true
+            }
+        },
+        {
+            "location": "[resourceGroup().location]",
+            "name": "[parameters('privateEndpointName')]",
+            "type": "Microsoft.Network/privateEndpoints",
+            "apiVersion": "2021-05-01",
+            "properties": {
+                "subnet": {
+                    "id": "[parameters('subnet')]"
+                },
+                "customNetworkInterfaceName":  "[concat(parameters('privateEndpointName'),'-nic')]",
+                "privateLinkServiceConnections": [
+                    {
+                        "name": "[parameters('privateEndpointName')]",
+                        "properties": {
+                            "privateLinkServiceId": "[concat('/subscriptions/',subscription().subscriptionId,'/resourcegroups/',resourceGroup().name,'/providers/Microsoft.EventGrid/namespaces/',parameters('namespace_name'))]",
+                            "groupIds": "[parameters('targetSubResource')]"
+                        }
+                    }
+                ]
+            },
+            "tags": {
+                "AMBIENTE": "[parameters('environment_tag')]",
+                "OI": "[parameters('oi_tag')]"
+            },
+            "dependsOn": ["[concat('Microsoft.EventGrid/namespaces/', parameters('namespace_name'))]"]
+        }   
+    ]
+}
