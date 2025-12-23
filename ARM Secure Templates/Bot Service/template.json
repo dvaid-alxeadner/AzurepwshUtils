@@ -1,0 +1,121 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "botchannel_name": 
+        {
+            "type": "string"
+        },
+        "sku":{
+            "type": "string"
+        },
+        "applicationId": 
+        {
+            "type": "string"
+        },
+        "tenantId":
+        {
+            "type": "string"
+        },
+        "privateEndpointName": 
+        {
+            "type": "string"
+        },
+        "targetSubResource": 
+        {
+            "type": "array"
+        },
+        "subnet": {
+            "type": "string"
+        },
+        "environment_tag":
+        {
+            "type": "string"
+        },
+        "oi_tag":
+        {
+            "type": "string"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.BotService/botServices",
+            "apiVersion": "2023-09-15-preview",
+            "name": "[parameters('botchannel_name')]",
+            "location": "global",
+            "tags": {
+                "AMBIENTE": "[parameters('environment_tag')]",
+                "OI": "[parameters('oi_tag')]"
+            },
+            "sku": {
+                "name": "F0"
+            },
+            "kind": "azurebot",
+            "properties": {
+                "displayName": "[parameters('botchannel_name')]",
+                "iconUrl": "https://docs.botframework.com/static/devportal/client/images/bot-framework-default.png",
+                "endpoint": "[concat('https://', parameters('botchannel_name'), '.domain.com')]",
+                "msaAppType" : "SingleTenant",
+                "msaAppId": "[parameters('applicationId')]",
+                "msaAppTenantId": "[parameters('tenantId')]",
+                "isStreamingSupported": false,
+                "schemaTransformationVersion": "1.3",
+                "isCmekEnabled": false,
+                "publicNetworkAccess": "Disabled",
+                "disableLocalAuth": true
+            }
+        },
+        {
+            "type": "Microsoft.BotService/botServices/channels",
+            "apiVersion": "2023-09-15-preview",
+            "name": "[concat(parameters('botchannel_name'), '/DirectLineChannel')]",
+            "location": "global",
+            "dependsOn": [
+                "[resourceId('Microsoft.BotService/botServices', parameters('botchannel_name'))]"
+            ],
+            "properties": {
+                "properties": {
+                    "sites": [
+                        {
+                            "siteName": "Default Site",
+                            "isEnabled": true,
+                            "isV1Enabled": true,
+                            "isV3Enabled": true,
+                            "isSecureSiteEnabled": true,
+                            "isBlockUserUploadEnabled": true
+                        }
+                    ]
+                },
+                "channelName": "DirectLineChannel",
+                "location": "global"
+            }
+        },
+        {
+            "location": "[resourceGroup().location]",
+            "name": "[parameters('privateEndpointName')]",
+            "type": "Microsoft.Network/privateEndpoints",
+            "apiVersion": "2021-05-01",
+            "properties": {
+                "subnet": {
+                    "id": "[parameters('subnet')]"
+                },
+                "customNetworkInterfaceName":  "[concat(parameters('privateEndpointName'),'-nic')]",
+                "privateLinkServiceConnections": [
+                    {
+                        "name": "[parameters('privateEndpointName')]",
+                        "properties": {
+                            "privateLinkServiceId": "[concat('/subscriptions/',subscription().subscriptionId,'/resourcegroups/',resourceGroup().name,'/providers/Microsoft.BotService/botServices/',parameters('botchannel_name'))]",
+                            "groupIds": "[parameters('targetSubResource')]"
+                        }
+                    }
+                ]
+            },
+            "tags": {
+                "AMBIENTE": "[parameters('environment_tag')]",
+                "OI": "[parameters('oi_tag')]"
+            },
+            "dependsOn": ["[concat('Microsoft.BotService/botServices/', parameters('botchannel_name'))]"]
+        }
+    ]
+}
