@@ -1,0 +1,82 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "iotcentname": {
+            "type": "string"
+        },
+        "skuname":{
+            "type": "string"
+        },
+        "privateEndpointName": {
+            "type": "string"
+        },
+        "targetSubResource": {
+            "type": "array"
+        },
+        "subnet": {
+            "type": "string"
+        },
+        "environment_tag":
+        {
+            "type": "string"
+        },
+        "oi_tag":
+        {
+            "type": "string"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.IoTCentral/iotApps",
+            "apiVersion": "2023-06-15",
+            "name": "[parameters('iotcentname')]",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "AMBIENTE": "[parameters('environment_tag')]",
+                "OI": "[parameters('oi_tag')]"
+            },
+            "sku": {
+                "name": "[parameters('skuname')]"
+            },
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "properties": {
+                "displayName": "[parameters('iotcentname')]",
+                "subdomain": "[parameters('iotcentname')]",
+                "publicNetworkAccess": "Disabled",
+                "networkRuleSets": {
+                    "defaultAction": "Deny",
+                    "applyToDevices": false,
+                    "applyToIoTCentral": false,
+                    "ipRules": []
+                }
+            }
+        },
+        {   
+            "location": "[resourceGroup().location]",
+            "name": "[parameters('privateEndpointName')]",
+            "type": "Microsoft.Network/privateEndpoints",
+            "apiVersion": "2021-05-01",
+            "properties": {
+                "subnet": {
+                    "id": "[parameters('subnet')]"
+                },
+            "customNetworkInterfaceName":  "[concat(parameters('privateEndpointName'),'-nic')]",
+            "privateLinkServiceConnections": [
+                {
+                    "name": "[parameters('privateEndpointName')]",
+                    "properties": {
+                        "privateLinkServiceId": "[concat('/subscriptions/',subscription().subscriptionId,'/resourcegroups/',resourceGroup().name,'/providers/Microsoft.IoTCentral/IoTApps/',parameters('iotcentname'))]",
+                        "groupIds": "[parameters('targetSubResource')]"
+                    }
+                }
+            ]
+            },
+            "tags": {},
+            "dependsOn": ["[concat('Microsoft.IoTCentral/IoTApps/', parameters('iotcentname'))]"]
+        }
+    ]
+}
