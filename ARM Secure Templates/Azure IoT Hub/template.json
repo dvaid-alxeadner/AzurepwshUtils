@@ -1,0 +1,89 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "iothname": {
+            "type": "string"
+        },
+        "skuname":{
+            "type": "string"
+        },
+        "skutier":{
+            "type": "string"
+        },
+        "privateEndpointName": {
+            "type": "string"
+        },
+        "targetSubResource": {
+            "type": "array"
+        },
+        "subnet": {
+            "type": "string"
+        },
+        "environment_tag":
+        {
+            "type":"string"
+        },
+        "oi_tag":
+        {
+            "type": "string"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Devices/IotHubs",
+            "apiVersion": "2023-06-30",
+            "name": "[parameters('iothname')]",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "AMBIENTE": "[parameters('environment_tag')]",
+                "OI": "[parameters('oi_tag')]"
+            },
+            "sku": {
+                "name": "[parameters('skuname')]",
+                "tier": "[parameters('skutier')]",
+                "capacity": 1
+            },
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "properties": {
+                "ipFilterRules": [],
+                "networkRuleSets": {
+                    "defaultAction": "Deny",
+                    "applyToBuiltInEventHubEndpoint": false,
+                    "ipRules": []
+                },
+                "features": "RootCertificateV2",
+                "publicNetworkAccess": "Disabled",
+                "disableLocalAuth": true,
+                "minimumTlsVersion": "1.2",
+                "enableDataResidency": false
+            }
+        },
+        {   
+            "location": "[resourceGroup().location]",
+            "name": "[parameters('privateEndpointName')]",
+            "type": "Microsoft.Network/privateEndpoints",
+            "apiVersion": "2021-05-01",
+            "properties": {
+                "subnet": {
+                    "id": "[parameters('subnet')]"
+                },
+            "customNetworkInterfaceName":  "[concat(parameters('privateEndpointName'),'-nic')]",
+            "privateLinkServiceConnections": [
+                {
+                    "name": "[parameters('privateEndpointName')]",
+                    "properties": {
+                        "privateLinkServiceId": "[concat('/subscriptions/',subscription().subscriptionId,'/resourcegroups/',resourceGroup().name,'/providers/Microsoft.Devices/IotHubs/',parameters('iothname'))]",
+                        "groupIds": "[parameters('targetSubResource')]"
+                    }
+                }
+            ]
+            },
+            "tags": {},
+            "dependsOn": ["[concat('Microsoft.Devices/IotHubs/', parameters('iothname'))]"]
+        }
+    ]
+}
