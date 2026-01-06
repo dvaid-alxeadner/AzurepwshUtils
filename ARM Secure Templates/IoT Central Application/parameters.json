@@ -3,7 +3,7 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "iotcentname": {
-            "value": "iotcentname",
+            "value": "iotcent202601",
             "metadata": {
                 "description": "Azure IoT Central Application name."
             }
