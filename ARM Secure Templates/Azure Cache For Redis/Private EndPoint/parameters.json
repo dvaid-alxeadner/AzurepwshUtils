@@ -3,7 +3,7 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "redisname": {
-            "value": "redis202409",
+            "value": "redis202601",
             "metadata": {
                 "description": "Cache for redis name."
             }
