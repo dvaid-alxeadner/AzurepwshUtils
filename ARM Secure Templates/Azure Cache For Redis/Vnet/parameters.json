@@ -3,27 +3,27 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "redisname": {
-            "value": "redis202409",
+            "value": "redisVNET202601",
             "metadata": {
                 "description": "Cache for redis name."
             }
         },
         "skuName": {
-            "value": "Standard",
+            "value": "Premium",
             "metadata": {
-                "description": "Name of the SKU (Standard or Premium only)"
+                "description": "Name of the SKU (Premium only)"
             }
         },
         "skuFamily": {
-            "value": "C",
+            "value": "P",
             "metadata": {
-                "description": "Family of the SKU (Only C or P are supported)"
+                "description": "Family of the SKU (Only P are supported)"
             }
         },
         "skuCapacity": {
-            "value": 0,
+            "value": 1,
             "metadata": {
-                "description": "Capacity of the SKU (From zero to six)"
+                "description": "Capacity of the SKU (From one to six)"
             }
         },
         "subnet": {

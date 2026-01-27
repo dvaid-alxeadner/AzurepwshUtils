@@ -37,6 +37,9 @@
                 "AMBIENTE": "[parameters('environment_tag')]",
                 "OI": "[parameters('oi_tag')]"
             },
+            "identity": {
+                "type": "SystemAssigned"
+            },
             "properties": {
                 "redisVersion": "6.0",
                 "sku": {
