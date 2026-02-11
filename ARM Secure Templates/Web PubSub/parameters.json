@@ -3,9 +3,15 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "webpubsubname": {
-            "value": "webpubsub202410",
+            "value": "webpubsub202602",
             "metadata": {
                 "description": "Web PubSub name."
+            }
+        },
+        "kind": {
+            "value": "WebPubSub",
+            "metadata": {
+                "description": "Kind of the WebPubSub (WebPubSub or SocketIO)"
             }
         },
         "skuName": {

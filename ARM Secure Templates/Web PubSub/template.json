@@ -5,6 +5,9 @@
         "webpubsubname": {
             "type": "string"
         },
+        "kind": {
+            "type": "string"
+        },
         "skuName": {
             "type": "string"
         },
@@ -39,18 +42,22 @@
     "resources": [
         {
             "type": "Microsoft.SignalRService/WebPubSub",
-            "apiVersion": "2022-08-01-preview",
+            "apiVersion": "2024-03-01",
             "name": "[parameters('webpubsubname')]",
             "location": "[resourceGroup().location]",
             "tags": {
                 "AMBIENTE": "[parameters('environment_tag')]",
                 "OI": "[parameters('oi_tag')]"
             },
+            "kind":  "[parameters('kind')]",
             "sku": {
                 "name": "[parameters('skuName')]",
                 "tier": "[parameters('skuTier')]",
                 "size": "[parameters('skuSize')]",
                 "capacity": "[parameters('skuCapacity')]"
+            },
+            "identity": {
+                "type": "SystemAssigned"
             },
             "properties": {
                 "tls": {
