@@ -1890,7 +1890,7 @@ try {
         # Effect DENY
         $policyName = "deny-cmkey-acr"
         $displayName = "242) Container registries should be encrypted with a customer-managed key"
-        $Description = "Para cumplir la linea base de seguridad de Azure los Azure Container Registry deben tener habilitado el cifrado en reposo con llaves administradas por XM"
+        $Description = "Para cumplir la linea base de seguridad de Azure los Azure Container Registry deben tener habilitado el cifrado en reposo con llaves administradas por el cliente"
         ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/5b9159ae-1701-4a6f-9a7a-aa9c8ddd0580" $Description $policyName $scope $displayName "Y" "Deny"
 
         # Machines should have secret findings resolved 
@@ -2238,6 +2238,125 @@ try {
         $displayName = "291) Azure Cosmos DB accounts should use customer-managed keys to encrypt data at rest"
         $Description = "Para cumplir la linea base de seguridad de Azure las Cosmos DB deben tener habilitado el cifrado en reposo con llaves administradas por el cliente"
         ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/1f905d99-2ab7-462c-a6b0-f709acca6c8f" $Description $policyName $scope $displayName "Y" "Deny"
+
+        # Azure Defender for SQL should be enabled for unprotected MySQL flexible servers
+        # Effect AuditIfNotExists
+        $policyName = "audit-mdfcunpt-mysqlflex"
+        $displayName = "292) Azure Defender for SQL should be enabled for unprotected MySQL flexible servers"
+        $Description = "Para cumplir la linea base de seguridad de Azure los servidores MySQL flexibles destrotegidos deben tener habilitado el Microsoft Defender for SQL"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/3bc8a0d5-38e0-4a3d-a657-2cb64468fc34" $Description $policyName $scope $displayName "Y"
+
+        # Network Watcher flow logs should have traffic analytics enabled
+        #Effect Audit
+        $policyName = "audit-flowlogs-traff"
+        $displayName = "293) Network Watcher flow logs should have traffic analytics enabled"
+        $Description = "Para cumplir la linea base de seguridad de Azure los Network Watcher Flow deben tener habilitado el analisis de trafico."
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/2f080164-9f4d-497e-9db6-416dc9f7b48a" $Description $policyName $scope $displayName "Y"
+        
+        # Application Insights components should block log ingestion and querying from public networks
+        # Effect DENY
+        $policyName = "deny-public-appinsgths"
+        $displayName = "294) Application Insights components should block log ingestion and querying from public networks"
+        $Description = "Para cumplir la linea base de seguridad de Azure los servicios de application insights deben bloquear las ingestas y consultas desde redes publicas."
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/1bc02227-0cb6-4e11-8f53-eb0b22eab7e8" $Description $policyName $scope $displayName "Y" "Deny"
+        
+        # Application Insights components should block non-Azure Active Directory based ingestion
+        # Effect DENY
+        $policyName = "deny-nonaad-appinsgths"
+        $displayName = "295) Application Insights components should block non-Azure Active Directory based ingestion"
+        $Description = "Para cumplir la linea base de seguridad de Azure los servicios de application insights deben bloquear las ingestas que no esten basadas en Microsoft Entra ID"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/199d5677-e4d9-4264-9465-efe1839c06bd" $Description $policyName $scope $displayName "Y" "Deny"
+
+        # Azure Databricks Workspaces should use private link
+        # Effect Audit
+        $policyName = "audit-prvlnk-dtbrcks"
+        $displayName = "296) Azure Databricks Workspaces should use private link"
+        $Description = "Para cumplir la linea base de seguridad de Azure los Azure Databricks Workspaces deben estar conectados a una VNET"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/258823f2-4595-4b52-b333-cc96192710d8" $Description $policyName $scope $displayName "Y"
+        
+        # Azure Databricks workspaces should be Premium SKU that supports features like private link, customer-managed key for encryption
+        # Effect DENY
+        $policyName = "deny-skuvnet-dtbrcks"
+        $displayName = "297) Azure Databricks workspaces should be Premium SKU that supports features like private link, customer-managed key..."
+        $Description = "Para cumplir la linea base de seguridad de Azure los Azure Databricks Workspaces deben usar el SKU Premium"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/2cc2c3b5-c2f8-45aa-a9e6-f90d85ae8352" $Description $policyName $scope $displayName "Y" "Deny"
+
+        # Authorization rules on the Event Hub instance should be defined
+        # Effect AuditIfNotExists
+        $policyName = "audit-defauthrules-ehub"
+        $displayName = "298) Authorization rules on the Event Hub instance should be defined"
+        $Description = "Para cumplir la linea base de seguridad de Azure los Event Hub namespaces deben tener reglas de autorización definidas"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/f4826e5f-6a27-407c-ae3e-9582eb39891d" $Description $policyName $scope $displayName "Y"
+        
+        # Azure Machine Learning workspaces should be encrypted with the use of a customer-managed key
+        # Effect AuditIfNotExists
+        $policyName = "audit-cmkey-mlw"
+        $displayName = "299) Azure Machine Learning workspaces should be encrypted with the use of a customer-managed key"
+        $Description = "Para cumplir la linea base de seguridad de Azure los Machine Learning deben tener habilitado el cifrado en reposo con llaves administradas por el cliente"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/7f40cee6-e933-4d0f-a782-b96615e0f4a6" $Description $policyName $scope $displayName "Y"
+        
+        # Azure IoT Hub should have local authentication methods disabled for Service Apis
+        # Effect DENY
+        $policyName = "deny-dlocalauthapi-ioth"
+        $displayName = "300) Azure IoT Hub should have local authentication methods disabled for Service Apis"
+        $Description = "Para cumplir la linea base de seguridad de Azure los IoT HUB deben tener deshabilitada la autenticacion local para las API de servicio"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/672d56b3-23a7-4a3c-a233-b77ed7777518" $Description $policyName $scope $displayName "Y" "Deny"
+
+        # Public network access on Azure IoT Hub should be disabled
+        # Effect DENY
+        $policyName = "deny-pubaccess-ioth"
+        $displayName = "301) Public network access on Azure IoT Hub should be disabled"
+        $Description = "Para cumplir la linea base de seguridad de Azure los IoT Hub deben tener deshabilitado el acceso publico"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/2d6830fb-07eb-48e7-8c4d-2a442b35f0fb" $Description $policyName $scope $displayName "Y" "Deny"
+
+        # IoT Hub device provisioning service instances should disable public network access
+        # Effect DENY
+        $policyName = "deny-pubaccess-iothubdv"
+        $displayName = "302) IoT Hub device provisioning service instances should disable public network access"
+        $Description = "Para cumplir la linea base de seguridad de Azure los IoT Hub deben deshabilitar el acceso publico de los dispositivos en el servicio de aprovisionamiento"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/d82101f3-f3ce-4fc5-8708-4c09f4009546" $Description $policyName $scope $displayName "Y" "Deny"
+    
+        # Public network access should be disabled for IoT Central
+        # Effect DENY
+        $policyName = "deny-pubaccess-iotcntrl"
+        $displayName = "303) Public network access should be disabled for IoT Central"
+        $Description = "Para cumplir la linea base de seguridad de Azure los IoT Central deben tener deshabilitado el acceso publico"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/cd870362-211d-4cad-9ad9-11e5ea4ebbc1" $Description $policyName $scope $displayName "Y" "Deny"
+
+        # IoT Central should use private link
+        # Effect DENY
+        $policyName = "deny-plink-iotcntrl"
+        $displayName = "304) IoT Central should use private link"
+        $Description = "Para cumplir la linea base de seguridad de Azure los IoT central deben estar conectados a una VNET"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/9ace2dbc-4b71-48b6-b2a7-428b0b2e3944" $Description $policyName $scope $displayName "Y" "Deny"
+        
+        # Synapse Workspaces should have Microsoft Entra-only authentication enabled
+        # Effect DENY
+        $policyName = "deny-localauth-synps"
+        $displayName = "305) Synapse Workspaces should have Microsoft Entra-only authentication enabled"
+        $Description = "Para cumplir la linea base de seguridad de Azure los Synapse Workspace deben tener deshabilitada la autenticacion local."
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/6ea81a52-5ca7-4575-9669-eaa910b7edf8" $Description $policyName $scope $displayName "Y" "Deny"
+        
+        # Azure Synapse workspaces should use private link
+        # Effect Audit
+        $policyName = "audit-plink-synps"
+        $displayName = "306) Azure Synapse workspaces should use private link"
+        $Description = "Para cumplir la linea base de seguridad de Azure los Synapse Workspace deben estar conectados a una VNET"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/72d11df1-dd8a-41f7-8925-b05b960ebafc" $Description $policyName $scope $displayName "Y"
+        
+        # IP firewall rules on Azure Synapse workspaces should be removed
+        # Effect Audit
+        $policyName = "audit-noiprules-synps"
+        $displayName = "307) IP firewall rules on Azure Synapse workspaces should be removed"
+        $Description = "Para cumplir la linea base de seguridad de Azure los Synapse Workspace no deben tener reglas de firewall basadas en direcciones IP"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/72d11df1-dd8a-41f7-8925-b05b960ebafc" $Description $policyName $scope $displayName "Y"
+
+        # Azure Cache for Redis Enterprise should use customer-managed keys for encrypting disk data
+        # Effect DENY
+        $policyName = "deny-cmkey-redis"
+        $displayName = "308) Azure Cache for Redis Enterprise should use customer-managed keys for encrypting disk data"
+        $Description = "Para cumplir la linea base de seguridad de Azure los Azure Cache For Redis deben tener habilitado el cifrado en reposo con llaves administradas por el cliente"
+        ManageAzPolicy "/providers/Microsoft.Authorization/policyDefinitions/09aa11bb-87ec-409f-bf0b-49b7c1561a87" $Description $policyName $scope $displayName "Y" "Deny"
     }
 }
 Catch
@@ -2246,4 +2365,5 @@ Catch
     Write-Host "Error please report in https://github.com/dvaid-alxeadner/AzurepwshUtils"
     exit 
 }
+
 
