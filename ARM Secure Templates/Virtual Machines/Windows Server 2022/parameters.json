@@ -21,16 +21,15 @@
             }
         },
         "subnetName": {
-            "value": "SUBNET_NAME",
+            "value": "SBNET_VM",
             "metadata": {
                 "description": "Name of the subnet where the network interface will exist"
             }
         },
         "virtualMachineName":{
-		"value": "VM-W22-20230908",
-            	"metadata": {
-                	"description": "Name of the virtual machine"
-            	}
+            "metadata": {
+                "description": "Name of the virtual machine"
+            }
         },
         "imageSku":
         {
@@ -43,7 +42,7 @@
         {
             "value": true,
             "metadata": {
-                "description": "Boolean for Enable The Hotpatching feature"
+                "description": "Boolean for Enable The Hotpatching feature > WS 2022"
             }
         },
         "virtualMachineSize":

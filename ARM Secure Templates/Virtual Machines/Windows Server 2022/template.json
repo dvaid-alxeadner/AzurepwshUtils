@@ -50,7 +50,7 @@
     "resources": [
         {
             "type": "Microsoft.Network/networkInterfaces",
-            "apiVersion": "2022-09-01",
+            "apiVersion": "2022-11-01",
             "name": "[concat('nic-',parameters('virtualMachineName'))]",
             "location": "[resourceGroup().location]",
             "tags": {
@@ -73,7 +73,7 @@
         },
         {
             "type": "Microsoft.Compute/virtualMachines",
-            "apiVersion": "2022-03-01",
+            "apiVersion": "2024-03-01",
             "name": "[parameters('virtualMachineName')]",
             "location": "[resourceGroup().location]",
             "tags": {
@@ -138,7 +138,7 @@
                             "automaticByPlatformSettings": {
                                 "rebootSetting": "Never"
                             },
-			"assessmentMode": "AutomaticByPlatform"
+                            "assessmentMode": "AutomaticByPlatform"
                         }
                     }
                 },
@@ -205,7 +205,26 @@
                 		"typeHandlerVersion": "1.0",
                 		"autoUpgradeMinorVersion": true
 					}
-            	}
+            	},
+                {
+                    "type": "extensions",
+                    "apiVersion": "2022-11-01",
+                    "name": "AzurePolicyforWindows",
+                    "location": "[resourceGroup().location]",
+                    "tags": {
+                        "AMBIENTE": "[parameters('environment_tag')]",
+                        "OI": "[parameters('oi_tag')]"
+                    },
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Compute/virtualMachines', parameters('virtualMachineName'))]"
+                    ],
+                    "properties": {
+                        "publisher": "Microsoft.GuestConfiguration",
+                        "type": "ConfigurationforWindows",
+                        "typeHandlerVersion": "1.0",
+                        "autoUpgradeMinorVersion": true
+                    }
+                }
             ]
         }
     ]
