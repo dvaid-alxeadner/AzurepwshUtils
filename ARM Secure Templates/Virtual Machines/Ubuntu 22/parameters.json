@@ -21,7 +21,7 @@
             }
         },
         "virtualNetworkId": {
-            "value":"/subscriptions/<SubscriptionID>/resourceGroups/<ResourceGroupName>/providers/Microsoft.Network/virtualNetworks/<VNETName>/subnets/<Subnet Name>",
+            "value":"/subscriptions/<SubscriptionID>/resourceGroups/<ResourceGroupName>/providers/Microsoft.Network/virtualNetworks/<VNETName>",
             "metadata": {
                 "description": "id of the Vnet"
             }
