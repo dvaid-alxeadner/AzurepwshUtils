@@ -14,20 +14,25 @@
                 "description": "Admin Password"
             }
         },
+        "sshPublicKey": {
+            "value": null,
+            "metadata": {
+                "description": "Public SSH Key for autentication"
+            }
+        },
         "virtualNetworkId": {
-            "value": "/subscriptions/<SubscriptionID>/resourceGroups/<ResourceGroupName>/providers/Microsoft.Network/virtualNetworks/<VNETName>",
-		"metadata": {
+            "value":"/subscriptions/<SubscriptionID>/resourceGroups/<ResourceGroupName>/providers/Microsoft.Network/virtualNetworks/<VNETName>/subnets/<Subnet Name>",
+            "metadata": {
                 "description": "id of the Vnet"
             }
         },
         "subnetName": {
-            "value": "SUBNET_NAME",
+            "value": "SBNET_VM",
             "metadata": {
                 "description": "Name of the subnet where the network interface will exist"
             }
         },
         "virtualMachineName":{
-		"value": "VM-U22-20230914",
             "metadata": {
                 "description": "Name of the virtual machine"
             }

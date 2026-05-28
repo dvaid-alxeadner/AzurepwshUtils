@@ -8,6 +8,9 @@
         "adminPassword": {
             "type": "Securestring"
         },
+        "sshPublicKey": {
+            "type": "String"
+        },
         "virtualNetworkId": {
             "type": "String"
         },
@@ -130,14 +133,22 @@
                     "allowExtensionOperations": true,
 
                     "linuxConfiguration": {
-                        "disablePasswordAuthentication": false,
+                        "disablePasswordAuthentication": true,
+                        
+                        "ssh": {
+                            "publicKeys": [
+                            {
+                                "path": "[concat('/home/', parameters('adminUsername'), '/.ssh/authorized_keys')]",
+                                "keyData": "[parameters('sshPublicKey')]"
+                            }]
+                            },
                         "provisionVMAgent": true,
                         "patchSettings": {
                             "patchMode": "AutomaticByPlatform",
                             "automaticByPlatformSettings": {
                                 "rebootSetting": "Never"
                             },
-                        "assessmentMode": "AutomaticByPlatform"
+                            "assessmentMode": "AutomaticByPlatform"
                         }
                     }
                 },
@@ -164,6 +175,44 @@
                         "publisher": "Microsoft.Azure.ChangeTrackingAndInventory",
                         "type": "ChangeTracking-Linux",
                         "typeHandlerVersion": "2.0",
+                        "autoUpgradeMinorVersion": true
+                    }
+                },
+                {
+                    "type": "extensions",
+                    "apiVersion": "2022-11-01",
+                    "name": "GuestAttestation",
+                    "location": "[resourceGroup().location]",
+                    "tags": {
+                        "AMBIENTE": "[parameters('environment_tag')]",
+                        "OI": "[parameters('oi_tag')]"
+                    },
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Compute/virtualMachines', parameters('virtualMachineName'))]"
+                    ],
+                    "properties": {
+                        "publisher": "Microsoft.Azure.Security.LinuxAttestation",
+                        "type": "GuestAttestation",
+                        "typeHandlerVersion": "1.0",
+                        "autoUpgradeMinorVersion": true
+                    }
+                },
+                {
+                    "type": "extensions",
+                    "apiVersion": "2022-11-01",
+                    "name": "GuestConfigurationForLinux",
+                    "location": "[resourceGroup().location]",
+                    "tags": {
+                        "AMBIENTE": "[parameters('environment_tag')]",
+                        "OI": "[parameters('oi_tag')]"
+                    },
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Compute/virtualMachines', parameters('virtualMachineName'))]"
+                    ],
+                    "properties": {
+                        "publisher": "Microsoft.GuestConfiguration",
+                        "type": "ConfigurationforLinux",
+                        "typeHandlerVersion": "1.0",
                         "autoUpgradeMinorVersion": true
                     }
                 }
