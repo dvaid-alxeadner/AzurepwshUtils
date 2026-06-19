@@ -2,15 +2,6 @@
     "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "subscriptionId": {
-            "type": "string"
-        },
-        "resourceGroup":{
-            "type": "string"
-        },
-        "location": {
-            "type": "string"
-        },
         "datalakename": {
             "type": "string"
         },
@@ -65,7 +56,10 @@
             "name": "[parameters('datalakename')]",
             "type": "Microsoft.Storage/storageAccounts",
             "apiVersion": "2022-05-01",
-            "location": "[parameters('location')]",
+            "location": "[resourceGroup().location]",
+            "identity": {
+                "type": "SystemAssigned"
+            },
             "properties": {
                 "accessTier": "[parameters('accessTier')]",
                 "minimumTlsVersion": "TLS1_2",
@@ -138,7 +132,7 @@
             ]
         },
         {
-            "location": "[parameters('location')]",
+            "location": "[resourceGroup().location]",
             "name": "[parameters('privateEndpointName')]",
             "type": "Microsoft.Network/privateEndpoints",
             "apiVersion": "2021-05-01",
@@ -151,7 +145,7 @@
                     {
                         "name": "[parameters('privateEndpointName')]",
                         "properties": {
-                            "privateLinkServiceId": "[concat('/subscriptions/',parameters('subscriptionId'),'/resourcegroups/',parameters('resourceGroup'),'/providers/Microsoft.Storage/storageAccounts/',parameters('datalakename'))]",
+                            "privateLinkServiceId": "[concat('/subscriptions/',subscription().subscriptionId,'/resourcegroups/',resourceGroup().name,'/providers/Microsoft.Storage/storageAccounts/',parameters('datalakename'))]",
                             "groupIds": "[parameters('targetSubResource')]"
                         }
                     }
