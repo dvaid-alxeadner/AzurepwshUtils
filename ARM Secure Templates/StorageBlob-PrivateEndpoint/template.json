@@ -2,15 +2,6 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "subscriptionId": {
-            "type": "string"
-        },
-        "resourceGroup": {
-            "type": "string"
-        },
-        "location": {
-            "type": "string"
-        },
         "storageAccountName": {
             "type": "string"
         },
@@ -72,7 +63,10 @@
             "name": "[parameters('storageAccountName')]",
             "type": "Microsoft.Storage/storageAccounts",
             "apiVersion": "2022-05-01",
-            "location": "[parameters('location')]",
+            "location": "[resourceGroup().location]",
+            "identity": {
+                "type": "SystemAssigned"
+            },
             "properties": {
                 "accessTier": "[parameters('accessTier')]",
                 "minimumTlsVersion": "TLS1_2",
@@ -81,6 +75,7 @@
                 "allowBlobPublicAccess": false,
                 "allowSharedKeyAccess": false,
                 "allowCrossTenantReplication": false,
+                "isHnsEnabled": false,
                 "defaultToOAuthAuthentication": "[parameters('defaultOAuth')]",
                 "allowedCopyScope": "AAD",
                 "networkAcls": {
@@ -156,7 +151,7 @@
             ]
         },
         {
-            "location": "[parameters('location')]",
+            "location": "[resourceGroup().location]",
             "name": "[parameters('privateEndpointName')]",
             "type": "Microsoft.Network/privateEndpoints",
             "apiVersion": "2021-05-01",
@@ -169,7 +164,7 @@
                     {
                         "name": "[parameters('privateEndpointName')]",
                         "properties": {
-                            "privateLinkServiceId": "[concat('/subscriptions/',parameters('subscriptionId'),'/resourcegroups/',parameters('resourceGroup'),'/providers/Microsoft.Storage/storageAccounts/',parameters('storageAccountName'))]",
+                            "privateLinkServiceId": "[concat('/subscriptions/',subscription().subscriptionId,'/resourcegroups/',resourceGroup().name,'/providers/Microsoft.Storage/storageAccounts/',parameters('storageAccountName'))]",
                             "groupIds": "[parameters('targetSubResource')]"
                         }
                     }
