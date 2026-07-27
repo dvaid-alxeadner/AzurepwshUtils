@@ -3,19 +3,19 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "name": {
-            "value": "azfunc202504",
+            "value": "azfunclin202607",
             "metadata": {
                 "description": "Function name."
             }
         },
         "hostingPlanName": {
-            "value": "appserviceplan202504",
+            "value": "appserviceplan",
             "metadata": {
                 "description": "Service Plan name."
             }
         },
         "serverFarmResourceGroup": {
-            "value": "<Resource Group>",
+            "value": "<Resource Group For App Service Plan>",
             "metadata": {
                 "description": "Resource group name."
             }
@@ -27,7 +27,7 @@
             }
         },
         "storageAccountName": {
-            "value": "storagedic22",
+            "value": "<Storage Name>",
             "metadata": {
                 "description": "Storage account name"
             }
@@ -36,7 +36,7 @@
             "value": true
         },
         "linuxFxVersion": {
-            "value": "DOTNET|7.0",
+            "value": "DOTNET|10.0",
             "metadata": {
                 "description": "Dot net framework version"
             }
