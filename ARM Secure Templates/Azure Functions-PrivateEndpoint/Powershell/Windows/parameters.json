@@ -3,7 +3,7 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "name": {
-            "value": "azfuncpwsh202504",
+            "value": "azfuncpwshwin202607",
             "metadata": {
                 "description": "Function name."
             }
@@ -36,7 +36,7 @@
             "value": false
         },
         "pwshversion": {
-            "value": "7.2",
+            "value": "7.4",
             "metadata": {
                 "description": "Powershell version"
             }
