@@ -3,19 +3,19 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "name": {
-            "value": "azfuncjava202504",
+            "value": "azfuncjavalin202607",
             "metadata": {
                 "description": "Function name."
             }
         },
         "hostingPlanName": {
-            "value": "appserviceplan202504",
+            "value": "appserviceplanlinux",
             "metadata": {
                 "description": "Service Plan name."
             }
         },
         "serverFarmResourceGroup": {
-            "value": "<Resource Group>",
+            "value": "<Resource Group For App Service Plan>",
             "metadata": {
                 "description": "Resource group name."
             }
@@ -27,7 +27,7 @@
             }
         },
         "storageAccountName": {
-            "value": "storagedic22",
+            "value": "<Storage Name>",
             "metadata": {
                 "description": "Storage account name"
             }
@@ -36,7 +36,7 @@
             "value": true
         },
         "linuxFxVersion": {
-            "value": "Java|17",
+            "value": "Java|21",
             "metadata": {
                 "description": "Java version"
             }
