@@ -3,7 +3,7 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "name": {
-            "value": "azfuncpy202504",
+            "value": "azfuncpy202607",
             "metadata": {
                 "description": "Function name."
             }
@@ -36,7 +36,7 @@
             "value": true
         },
         "linuxFxVersion": {
-            "value": "Python|3.9",
+            "value": "Python|3.14",
             "metadata": {
                 "description": "Python version"
             }

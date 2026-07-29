@@ -50,13 +50,9 @@
                 },
             "location": "[resourceGroup().location]",
             "tags": {
-                "hidden-link: /app-insights-resource-id": "[concat('/subscriptions/',subscription().subscriptionId,'/resourceGroups/',parameters('serverFarmResourceGroup'),'/providers/Microsoft.Insights/components/',parameters('name'))]",
                 "AMBIENTE": "[parameters('environment_tag')]",
                 "OI": "[parameters('oi_tag')]"
             },
-            "dependsOn": [
-                "[concat('microsoft.insights/components/',parameters('name'))]"
-            ],
             "properties": {
                 "name": "[parameters('name')]",
                 "siteConfig": {
@@ -68,14 +64,6 @@
                         {
                             "name": "FUNCTIONS_WORKER_RUNTIME",
                             "value": "python"
-                        },
-                        {
-                            "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
-                            "value": "[reference(concat('microsoft.insights/components/',parameters('name')), '2015-05-01').InstrumentationKey]"
-                        },
-                        {
-                            "name": "APPLICATIONINSIGHTS_CONNECTION_STRING",
-                            "value": "[reference(concat('microsoft.insights/components/',parameters('name')), '2015-05-01').ConnectionString]"
                         },
                         {
                             "name": "AzureWebJobsStorage",
@@ -99,7 +87,8 @@
                 "virtualNetworkSubnetId": null,
                 "httpsOnly": true,
                 "endToEndEncryptionEnabled": true,
-                "publicNetworkAccess": "Disabled"
+                "publicNetworkAccess": "Disabled",
+                "sshEnabled": false
             }
         },
         {
@@ -127,23 +116,6 @@
                     "OI": "[parameters('oi_tag')]"
                 },
             "dependsOn": ["[concat('Microsoft.Web/sites/', parameters('name'))]"]
-        },
-        {
-            "apiVersion": "2020-02-02-preview",
-            "name": "[parameters('name')]",
-            "type": "microsoft.insights/components",
-            "location": "eastus2",
-            "tags": {
-                "AMBIENTE": "[parameters('environment_tag')]",
-                "OI": "[parameters('oi_tag')]"
-            },
-            "dependsOn": [],
-            "properties": {
-                "ApplicationId": "[parameters('name')]",
-                "Request_Source": "IbizaWebAppExtensionCreate",
-                "Flow_Type": "Redfield",
-                "Application_Type": "web"
-            }
         }
     ]
 }
